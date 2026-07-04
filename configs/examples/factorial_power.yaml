@@ -1,0 +1,74 @@
+# Large factorial experiment — demonstrates full design space
+# Usage: caliper plan --config configs/examples/factorial_power.yaml
+
+experiment_id: factorial_power
+description: >
+  Factorial design for Paper 1 power analysis: 3 models × 2 temperatures
+  × 3 prompt variants × 2 tasks × 5 runs = 180 combinations.
+
+random_seed: 7
+
+providers:
+  mock:
+    type: mock
+
+models:
+  - id: small
+    provider: mock
+    model_id: mock-7b
+  - id: medium
+    provider: mock
+    model_id: mock-13b
+  - id: large
+    provider: mock
+    model_id: mock-70b
+
+prompt_variants:
+  - id: direct
+    template: "Q: {question}\nA:"
+  - id: cot
+    template: "Think step by step.\nQ: {question}\nA:"
+  - id: self-consistency
+    template: "Answer with confidence.\nQ: {question}\nA:"
+
+tasks:
+  - id: gsm8k
+    dataset: gsm8k
+    split: test
+    num_samples: 50
+  - id: mmlu
+    dataset: mmlu
+    split: test
+    num_samples: 50
+
+temperatures:
+  - 0.0
+  - 0.7
+
+decoding:
+  top_p: 0.95
+  max_tokens: 1024
+
+evaluation_metrics:
+  - accuracy
+  - exact_match
+
+number_of_runs: 5
+
+output:
+  directory: ./outputs
+  format: parquet
+  save_raw_responses: true
+
+logging:
+  level: INFO
+  log_to_file: true
+  log_format: json
+
+execution:
+  shuffle: true
+  parallel_workers: 4
+
+metadata:
+  paper: "Paper 1 — power analysis"
+  design: "3x2x3x2x5 factorial"

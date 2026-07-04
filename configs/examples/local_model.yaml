@@ -1,0 +1,91 @@
+# Local open-weight model experiment
+# Usage:
+#   caliper validate --config configs/examples/local_model.yaml
+#   caliper plan --config configs/examples/local_model.yaml
+#
+# Before running for real:
+#   1. Download or build a model and set model_path below (or LOCAL_MODEL_PATH)
+#   2. Install backend deps: pip install -e ".[local]"  (see docs/local-models.md)
+#   3. caliper run configs/examples/local_model.yaml
+
+experiment_id: local_model_example
+description: >
+  Example CALIPER config for a local open-weight model on a single GPU
+  (e.g. RTX 4090). Does not assume any specific model is already downloaded.
+
+random_seed: 42
+
+providers:
+  local-gpu:
+    type: local
+    extra:
+      # Set to your checkpoint directory, GGUF file, or HuggingFace hub id (org/model).
+      # Alternatively set the LOCAL_MODEL_PATH environment variable.
+      model_path: /path/to/your/model
+      backend: transformers        # transformers | llama_cpp | vllm
+      device: cuda:0
+      dtype: bfloat16              # auto | float16 | bfloat16 | float32
+      quantization: none           # none | 4bit | 8bit | awq | gptq | gguf
+      deterministic: true
+      nvml: true                   # log GPU power/energy when pynvml is installed
+      nvml_device_index: 0
+      timeout_seconds: 300
+      max_retries: 1
+      # llama.cpp options (when backend: llama_cpp)
+      # n_gpu_layers: -1
+      # n_ctx: 4096
+      # vLLM options (when backend: vllm)
+      # gpu_memory_utilization: 0.90
+      # tensor_parallel_size: 1
+
+models:
+  - id: local-eval
+    provider: local-gpu
+    model_id: my-local-model       # logical name for logs/results
+    # Optional per-model override:
+    # extra:
+    #   model_path: /other/path/to/model
+
+prompt_variants:
+  - id: zero-shot
+    template: |
+      Complete the following task.
+      Input: {input}
+      Output:
+
+tasks:
+  - id: code-gen-sample
+    domain: code_generation
+    dataset: data/examples/code_generation_sample.jsonl
+    num_samples: 3
+
+temperatures:
+  - 0.0
+
+decoding:
+  top_p: 1.0
+  max_tokens: 128
+  stop: []
+
+evaluation_metrics:
+  - exact_match
+
+number_of_runs: 1
+
+output:
+  directory: ./outputs
+  format: parquet
+  save_raw_responses: true
+
+logging:
+  level: INFO
+  log_to_file: true
+  log_format: json
+
+execution:
+  shuffle: false
+  parallel_workers: 1
+
+metadata:
+  hardware: "single RTX 4090 (example)"
+  paper: "local inference benchmark"

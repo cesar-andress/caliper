@@ -1,0 +1,75 @@
+# Ranking fragility experiment — Paper 2
+# Usage: caliper plan --config configs/examples/ranking_fragility.yaml
+
+experiment_id: ranking_fragility
+description: >
+  Multi-model benchmark run designed to measure ranking fragility
+  under prompt and sampling perturbations.
+
+random_seed: 123
+
+providers:
+  mock:
+    type: mock
+
+models:
+  - id: model-alpha
+    provider: mock
+    model_id: alpha-7b
+
+  - id: model-beta
+    provider: mock
+    model_id: beta-13b
+
+  - id: model-gamma
+    provider: mock
+    model_id: gamma-70b
+
+prompt_variants:
+  - id: standard
+    template: "Question: {question}\nAnswer:"
+  - id: cot
+    template: "Let's think step by step.\nQuestion: {question}\nAnswer:"
+
+tasks:
+  - id: hellaswag
+    dataset: hellaswag
+    split: validation
+    num_samples: 100
+
+  - id: arc-challenge
+    dataset: arc
+    split: test
+    num_samples: 100
+    metrics:
+      - accuracy
+      - exact_match
+
+temperatures:
+  - 0.0
+
+decoding:
+  max_tokens: 512
+  top_p: 1.0
+
+evaluation_metrics:
+  - accuracy
+
+number_of_runs: 5
+
+output:
+  directory: ./outputs
+  format: parquet
+  save_raw_responses: true
+
+logging:
+  level: INFO
+  log_to_file: true
+  log_format: json
+
+execution:
+  shuffle: true
+  parallel_workers: 2
+
+metadata:
+  paper: "Paper 2 — ranking fragility"

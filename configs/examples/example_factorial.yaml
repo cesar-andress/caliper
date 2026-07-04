@@ -1,0 +1,75 @@
+# Factorial experiment example
+# Usage: caliper run configs/examples/example_factorial.yaml
+
+experiment_id: example_factorial
+description: >
+  Small factorial design for testing the CALIPER runner.
+  2 models × 2 tasks × 2 prompts × 2 temperatures × 2 runs = 32 cells.
+
+random_seed: 42
+
+providers:
+  mock:
+    type: mock
+  random:
+    type: random
+
+models:
+  - id: mock-model
+    provider: mock
+    model_id: mock-v1
+
+  - id: random-model
+    provider: random
+    model_id: random-v1
+
+prompt_variants:
+  - id: direct
+    template: "{input}\n\nAnswer:"
+  - id: instruct
+    template: "Instruction: answer the following.\n\n{input}\n\nAnswer:"
+
+tasks:
+  - id: cg-sample
+    domain: code_generation
+    dataset: data/examples/code_generation_sample.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+
+  - id: cs-sample
+    domain: code_summarization
+    dataset: data/examples/code_summarization_sample.jsonl
+    num_samples: 1
+    metrics:
+      - rouge_l
+
+temperatures:
+  - 0.0
+  - 0.7
+
+decoding:
+  top_p: 1.0
+  max_tokens: 256
+
+evaluation_metrics:
+  - exact_match
+
+number_of_runs: 2
+
+output:
+  directory: ./outputs
+  format: parquet
+  save_raw_responses: true
+
+logging:
+  level: INFO
+  log_to_file: true
+  log_format: json
+
+execution:
+  shuffle: false
+  parallel_workers: 1
+
+metadata:
+  design: "2x2x2x2x2 factorial"

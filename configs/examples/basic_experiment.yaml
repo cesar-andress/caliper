@@ -1,0 +1,81 @@
+# Basic CALIPER experiment
+# Usage: caliper validate --config configs/examples/basic_experiment.yaml
+
+experiment_id: basic_experiment
+description: >
+  Minimal example demonstrating the CALIPER config schema.
+  Uses mock providers; no API keys required.
+
+random_seed: 42
+
+providers:
+  mock:
+    type: mock
+
+models:
+  - id: mock-model-a
+    provider: mock
+    model_id: mock-v1
+
+  - id: mock-model-b
+    provider: mock
+    model_id: mock-v2
+    decoding:
+      max_tokens: 512
+
+prompt_variants:
+  - id: zero-shot
+    template: |
+      Answer the following question.
+      Question: {question}
+      Answer:
+
+  - id: few-shot
+    template: |
+      Here are some examples:
+      Q: What is 2+2? A: 4
+      Q: What is 3+3? A: 6
+      Now answer:
+      Q: {question} A:
+
+tasks:
+  - id: gsm8k-sample
+    dataset: gsm8k
+    split: test
+    num_samples: 10
+
+  - id: mmlu-sample
+    dataset: mmlu
+    split: test
+    num_samples: 10
+
+temperatures:
+  - 0.0
+  - 0.7
+
+decoding:
+  top_p: 1.0
+  max_tokens: 256
+  stop: []
+
+evaluation_metrics:
+  - accuracy
+
+number_of_runs: 3
+
+output:
+  directory: ./outputs
+  format: parquet
+  save_raw_responses: true
+
+logging:
+  level: INFO
+  log_to_file: true
+  log_format: json
+
+execution:
+  shuffle: true
+  parallel_workers: 1
+
+metadata:
+  paper: "Paper 1 — variance decomposition"
