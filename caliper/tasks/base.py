@@ -54,8 +54,11 @@ class BaseTask(ABC):
 
     def load_examples(self) -> list[TaskMetadata]:
         """Return all task instances in this dataset."""
-        limit = self.config.get("num_samples")
         records = self.dataset.records
+        filter_task_id = self.config.get("filter_task_id")
+        if filter_task_id:
+            records = [record for record in records if record.task_id == filter_task_id]
+        limit = self.config.get("num_samples")
         if limit is not None:
             return records[: int(limit)]
         return list(records)

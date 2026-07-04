@@ -30,6 +30,7 @@ class MockProvider(BaseModelProvider):
         provider_name: str = "mock",
         simulated_latency_ms: float = 1.0,
         fail_attempts: int = 0,
+        match_rate: float = 0.0,
         runtime: ProviderRuntimeConfig | None = None,
         **config: Any,
     ) -> None:
@@ -41,6 +42,7 @@ class MockProvider(BaseModelProvider):
         )
         self.simulated_latency_ms = simulated_latency_ms
         self.fail_attempts = fail_attempts
+        self.match_rate = min(max(match_rate, 0.0), 1.0)
         self._attempt_counter = 0
 
     def is_available(self) -> bool:
@@ -84,12 +86,32 @@ class MockProvider(BaseModelProvider):
         )
 
     def _deterministic_text(self, request: ModelRequest) -> str:
+        expected = request.metadata.get("expected_output")
+        if self.match_rate > 0.0 and expected:
+            if self._match_probability(request) < self.match_rate:
+                return str(expected)
+            return self._incorrect_output(request, str(expected))
+
         key = (
             f"{self.model_name}|{request.seed}|{request.temperature}|"
             f"{request.prompt_id}|{request.prompt}"
         )
         digest = hashlib.sha256(key.encode()).hexdigest()[:16]
         return f"[mock:{self.model_name}:{digest}]"
+
+    def _match_probability(self, request: ModelRequest) -> float:
+        key = (
+            f"{self.model_name}|{request.seed}|{request.temperature}|"
+            f"{request.prompt_id}|{request.task_id}|{request.run_id}"
+        )
+        digest = int(hashlib.sha256(key.encode()).hexdigest()[:8], 16)
+        return (digest % 10_000) / 10_000.0
+
+    def _incorrect_output(self, request: ModelRequest, expected: str) -> str:
+        digest = hashlib.sha256(
+            f"{request.task_id}|{request.prompt_id}|{request.seed}".encode()
+        ).hexdigest()[:8]
+        return f"{expected}\n# mock_incorrect:{digest}"
 
 
 def _estimate_tokens(text: str) -> int:

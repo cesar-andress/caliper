@@ -32,6 +32,7 @@ class RandomProvider(BaseModelProvider):
         provider_name: str = "random",
         response_word_count: int = 8,
         simulated_latency_ms: float = 1.0,
+        match_rate: float = 0.0,
         runtime: ProviderRuntimeConfig | None = None,
         **config: Any,
     ) -> None:
@@ -43,6 +44,7 @@ class RandomProvider(BaseModelProvider):
         )
         self.response_word_count = response_word_count
         self.simulated_latency_ms = simulated_latency_ms
+        self.match_rate = min(max(match_rate, 0.0), 1.0)
         self._call_counter = 0
 
     def is_available(self) -> bool:
@@ -55,14 +57,19 @@ class RandomProvider(BaseModelProvider):
             time.sleep(self.simulated_latency_ms / 1000.0)
 
         rng = self._build_rng(request)
-        words = [
-            "".join(rng.choices(string.ascii_lowercase, k=rng.randint(3, 8)))
-            for _ in range(self.response_word_count)
-        ]
-        text = " ".join(words)
+        expected = request.metadata.get("expected_output")
+        if self.match_rate > 0.0 and expected and rng.random() < self.match_rate:
+            text = str(expected)
+            completion_tokens = max(1, len(text.split()))
+        else:
+            words = [
+                "".join(rng.choices(string.ascii_lowercase, k=rng.randint(3, 8)))
+                for _ in range(self.response_word_count)
+            ]
+            text = " ".join(words)
+            completion_tokens = len(words)
 
         prompt_tokens = max(1, len(request.prompt.split()))
-        completion_tokens = len(words)
 
         return ModelResponse(
             text=text,

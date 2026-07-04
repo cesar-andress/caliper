@@ -39,6 +39,12 @@ class TestMockProvider:
         r2 = provider.generate(req)
         assert r1.text == r2.text
 
+    def test_match_rate_returns_expected_output(self) -> None:
+        provider = MockProvider(model_name="mock-v1", simulated_latency_ms=0, match_rate=1.0)
+        req = _make_request(metadata={"expected_output": "def add(a, b):\n    return a + b"})
+        response = provider.generate(req)
+        assert response.text.startswith("def add")
+
     def test_different_seed_different_output(self) -> None:
         provider = MockProvider(model_name="mock-v1", simulated_latency_ms=0)
         r1 = provider.generate(_make_request(seed=1))

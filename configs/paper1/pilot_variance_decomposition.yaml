@@ -1,0 +1,246 @@
+# Paper 1 pilot — variance decomposition under mock model tiers
+# Usage:
+#   caliper plan --config configs/paper1/pilot_variance_decomposition.yaml
+#   caliper run  --config configs/paper1/pilot_variance_decomposition.yaml
+#
+# Factorial: 3 models × 20 tasks × 5 prompts × 2 temperatures × 10 runs = 6000 cells
+
+experiment_id: paper1_pilot_variance
+description: >
+  Paper 1 mock pilot for variance decomposition and power analysis.
+  Uses three simulated model quality tiers over 600 factorial cells.
+
+random_seed: 20260404
+
+providers:
+  mock_strong:
+    type: mock
+    extra:
+      match_rate: 0.85
+      simulated_latency_ms: 0
+  mock_medium:
+    type: mock
+    extra:
+      match_rate: 0.55
+      simulated_latency_ms: 0
+  mock_noisy:
+    type: random
+    extra:
+      match_rate: 0.25
+      simulated_latency_ms: 0
+
+models:
+  - id: mock_strong
+    provider: mock_strong
+    model_id: mock-strong-v1
+  - id: mock_medium
+    provider: mock_medium
+    model_id: mock-medium-v1
+  - id: mock_noisy
+    provider: mock_noisy
+    model_id: mock-noisy-v1
+
+prompt_variants:
+  - id: direct
+    template: "{input}\n\nAnswer with Python code only:"
+  - id: concise
+    template: "Briefly solve the task.\n\n{input}\n\nCode:"
+  - id: step_by_step
+    template: "Think step by step, then write code.\n\n{input}\n\nSolution:"
+  - id: test_aware
+    template: "Write Python code that should pass unit tests.\n\n{input}\n\nCode:"
+  - id: production_quality
+    template: "Write production-quality, readable Python.\n\n{input}\n\nAnswer:"
+
+tasks:
+  - id: task-pilot-001
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-001
+  - id: task-pilot-002
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-002
+  - id: task-pilot-003
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-003
+  - id: task-pilot-004
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-004
+  - id: task-pilot-005
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-005
+  - id: task-pilot-006
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-006
+  - id: task-pilot-007
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-007
+  - id: task-pilot-008
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-008
+  - id: task-pilot-009
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-009
+  - id: task-pilot-010
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-010
+  - id: task-pilot-011
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-011
+  - id: task-pilot-012
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-012
+  - id: task-pilot-013
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-013
+  - id: task-pilot-014
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-014
+  - id: task-pilot-015
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-015
+  - id: task-pilot-016
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-016
+  - id: task-pilot-017
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-017
+  - id: task-pilot-018
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-018
+  - id: task-pilot-019
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-019
+  - id: task-pilot-020
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-020
+temperatures:
+  - 0.0
+  - 0.7
+
+decoding:
+  top_p: 1.0
+  max_tokens: 256
+
+evaluation_metrics:
+  - exact_match
+
+number_of_runs: 10
+
+output:
+  directory: ./outputs
+  format: parquet
+  save_raw_responses: true
+
+logging:
+  level: INFO
+  log_to_file: true
+  log_format: json
+
+execution:
+  shuffle: false
+  parallel_workers: 1
+
+metadata:
+  paper: paper1
+  design: "3x20x5x2x10 factorial mock pilot (6000 cells)"
+  purpose: pipeline_validation

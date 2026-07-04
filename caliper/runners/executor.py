@@ -203,6 +203,10 @@ def execute_cell(
             top_k=decoding.top_k,
             max_tokens=decoding.max_tokens,
             stop=decoding.stop,
+            metadata={
+                "expected_output": example.expected_output,
+                "language": example.language,
+            },
         )
         response = provider.generate(request)
         predictions.append(response.text)
