@@ -117,6 +117,7 @@ class TestRegistry:
         assert "anthropic" in types
         assert "gemini" in types
         assert "local" in types
+        assert "ollama" in types
 
     def test_create_provider_factory(self) -> None:
         provider = create_provider("mock", model_name="via-factory", simulated_latency_ms=0)

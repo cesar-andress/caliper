@@ -1,0 +1,82 @@
+# Ollama smoke test — 12 cells
+# 1 model × 3 tasks × 2 prompts × 1 temperature × 2 runs = 12
+
+experiment_id: paper1_ollama_smoke
+description: >
+  Minimal Ollama smoke test for Paper 1 pipeline validation with local models.
+
+random_seed: 20260404
+
+providers:
+  ollama_local:
+    provider_type: ollama
+    base_url: http://localhost:11434
+    timeout_seconds: 300
+
+models:
+  - id: qwen25_coder_7b
+    provider: ollama_local
+    model_id: qwen2.5-coder:7b
+
+prompt_variants:
+  - id: direct
+    template: "{input}\n\nAnswer with Python code only:"
+  - id: test_aware
+    template: "Write Python code that should pass unit tests.\n\n{input}\n\nCode:"
+
+tasks:
+  - id: task-pilot-001
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-001
+  - id: task-pilot-002
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-002
+  - id: task-pilot-003
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-003
+
+temperatures:
+  - 0.0
+
+decoding:
+  top_p: 1.0
+  max_tokens: 256
+
+evaluation_metrics:
+  - exact_match
+
+number_of_runs: 2
+
+output:
+  directory: ./outputs
+  format: parquet
+  save_raw_responses: true
+
+logging:
+  level: INFO
+  log_to_file: true
+  log_format: json
+
+execution:
+  shuffle: false
+  parallel_workers: 1
+
+metadata:
+  paper: paper1
+  design: "1x3x2x1x2 ollama smoke"
+  purpose: ollama_smoke

@@ -1,0 +1,240 @@
+# Ollama Paper 1 pilot — 6000 cells
+# 6 models × 20 tasks × 5 prompts × 2 temperatures × 5 runs = 6000
+
+experiment_id: paper1_ollama_pilot
+description: >
+  Paper 1 local-model pilot using Ollama for variance decomposition with six code models.
+
+random_seed: 20260404
+
+providers:
+  ollama_local:
+    provider_type: ollama
+    base_url: http://localhost:11434
+    timeout_seconds: 300
+
+models:
+  - id: qwen25_coder_7b
+    provider: ollama_local
+    model_id: qwen2.5-coder:7b
+  - id: qwen25_coder_14b
+    provider: ollama_local
+    model_id: qwen2.5-coder:14b
+  - id: qwen25_coder_32b
+    provider: ollama_local
+    model_id: qwen2.5-coder:32b
+  - id: deepseek_coder_v2_lite
+    provider: ollama_local
+    model_id: deepseek-coder-v2:lite
+  - id: llama31_8b
+    provider: ollama_local
+    model_id: llama3.1:8b
+  - id: qwen3_32b
+    provider: ollama_local
+    model_id: qwen3:32b
+
+prompt_variants:
+  - id: direct
+    template: "{input}\n\nAnswer with Python code only:"
+  - id: concise
+    template: "Briefly solve the task.\n\n{input}\n\nCode:"
+  - id: step_by_step
+    template: "Think step by step, then write code.\n\n{input}\n\nSolution:"
+  - id: test_aware
+    template: "Write Python code that should pass unit tests.\n\n{input}\n\nCode:"
+  - id: production_quality
+    template: "Write production-quality, readable Python.\n\n{input}\n\nAnswer:"
+
+tasks:
+  - id: task-pilot-001
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-001
+  - id: task-pilot-002
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-002
+  - id: task-pilot-003
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-003
+  - id: task-pilot-004
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-004
+  - id: task-pilot-005
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-005
+  - id: task-pilot-006
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-006
+  - id: task-pilot-007
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-007
+  - id: task-pilot-008
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-008
+  - id: task-pilot-009
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-009
+  - id: task-pilot-010
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-010
+  - id: task-pilot-011
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-011
+  - id: task-pilot-012
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-012
+  - id: task-pilot-013
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-013
+  - id: task-pilot-014
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-014
+  - id: task-pilot-015
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-015
+  - id: task-pilot-016
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-016
+  - id: task-pilot-017
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-017
+  - id: task-pilot-018
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-018
+  - id: task-pilot-019
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-019
+  - id: task-pilot-020
+    domain: code_generation
+    dataset: data/paper1/pilot_code_tasks.jsonl
+    num_samples: 1
+    metrics:
+      - exact_match
+    extra:
+      filter_task_id: pilot-020
+
+temperatures:
+  - 0.0
+  - 0.7
+
+decoding:
+  top_p: 1.0
+  max_tokens: 256
+
+evaluation_metrics:
+  - exact_match
+
+number_of_runs: 5
+
+output:
+  directory: ./outputs
+  format: parquet
+  save_raw_responses: true
+
+logging:
+  level: INFO
+  log_to_file: true
+  log_format: json
+
+execution:
+  shuffle: false
+  parallel_workers: 1
+
+metadata:
+  paper: paper1
+  design: "6x20x5x2x5 ollama pilot (6000 cells)"
+  purpose: ollama_pilot

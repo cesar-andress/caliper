@@ -179,6 +179,39 @@ def export_artifact_cmd(experiment_dir: Path, force: bool) -> None:
 
 
 @main.group()
+def ollama() -> None:
+    """Inspect and manage local Ollama models."""
+
+
+@ollama.command("list")
+@click.option(
+    "--base-url",
+    default="http://localhost:11434",
+    show_default=True,
+    help="Ollama HTTP base URL.",
+)
+def ollama_list(base_url: str) -> None:
+    """List models available in the local Ollama instance."""
+    from caliper.models.ollama_client import OllamaConnectionError
+    from caliper.models.ollama_provider import list_local_models
+
+    try:
+        models = list_local_models(base_url=base_url)
+    except OllamaConnectionError as exc:
+        raise click.ClickException(
+            f"Could not reach Ollama at {base_url}. Is Ollama running? ({exc})"
+        ) from exc
+
+    if not models:
+        click.echo(f"No models found at {base_url}.")
+        return
+
+    click.echo(f"Models at {base_url}:")
+    for name in models:
+        click.echo(f"  - {name}")
+
+
+@main.group()
 def analyze() -> None:
     """Post-hoc statistical analysis on saved results."""
 

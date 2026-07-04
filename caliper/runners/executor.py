@@ -29,7 +29,7 @@ from caliper.tasks.schema import TaskDomain, TaskMetadata
 logger = structlog.get_logger(__name__)
 
 SUPPORTED_PROVIDER_TYPES = frozenset(
-    {"mock", "random", "openai", "anthropic", "gemini", "google", "local"}
+    {"mock", "random", "openai", "anthropic", "gemini", "google", "local", "ollama"}
 )
 
 API_PROVIDER_TYPES = frozenset({"openai", "anthropic", "gemini", "google"})
@@ -78,7 +78,10 @@ def build_provider(
 
     decoding = model.decoding or config.decoding
     extra = dict(provider_cfg.extra)
-    timeout_seconds = float(extra.pop("timeout_seconds", 60.0))
+    timeout_default = 60.0
+    if provider_cfg.timeout_seconds is not None:
+        timeout_default = float(provider_cfg.timeout_seconds)
+    timeout_seconds = float(extra.pop("timeout_seconds", timeout_default))
     max_retries = int(extra.pop("max_retries", 3))
     runtime = ProviderRuntimeConfig(
         timeout_seconds=timeout_seconds,
@@ -110,6 +113,12 @@ def build_provider(
         provider_kwargs.update(
             {k: v for k, v in model.extra.items() if k not in provider_kwargs}
         )
+    elif provider_cfg.type == "ollama":
+        provider_kwargs["base_url"] = provider_cfg.base_url or extra.pop(
+            "base_url",
+            "http://localhost:11434",
+        )
+        provider_kwargs.update(extra)
 
     return create_provider(
         provider_cfg.type,

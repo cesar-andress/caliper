@@ -24,6 +24,7 @@ from caliper.models import gemini_provider as _gemini_provider  # noqa: F401
 from caliper.models import mock as _mock  # noqa: F401
 from caliper.models import openai_provider as _openai_provider  # noqa: F401
 from caliper.models import random_provider as _random_provider  # noqa: F401
+from caliper.models import ollama_provider as _ollama_provider  # noqa: F401
 from caliper.models.local import provider as _local_provider  # noqa: F401
 
 __all__ = [
@@ -35,6 +36,7 @@ __all__ = [
     "ModelRequest",
     "ModelResponse",
     "OpenAIProvider",
+    "OllamaProvider",
     "ProviderError",
     "ProviderGenerationError",
     "ProviderRuntimeConfig",
@@ -54,5 +56,6 @@ from caliper.models.anthropic_provider import AnthropicProvider
 from caliper.models.gemini_provider import GeminiProvider
 from caliper.models.local.provider import LocalModelProvider
 from caliper.models.mock import MockProvider
+from caliper.models.ollama_provider import OllamaProvider
 from caliper.models.openai_provider import OpenAIProvider
 from caliper.models.random_provider import RandomProvider

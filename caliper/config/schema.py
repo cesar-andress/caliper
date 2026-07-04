@@ -7,9 +7,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterator, Literal, Self
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import AliasChoices, BaseModel, Field, field_validator, model_validator
 
-ProviderType = Literal["mock", "random", "openai", "anthropic", "gemini", "google", "local"]
+ProviderType = Literal["mock", "random", "openai", "anthropic", "gemini", "google", "local", "ollama"]
 TaskDomainType = Literal["code_generation", "bug_repair", "code_summarization"]
 OutputFormat = Literal["parquet", "jsonl", "csv"]
 LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR"]
@@ -32,9 +32,10 @@ class DecodingConfig(BaseModel):
 class ProviderConfig(BaseModel):
     """Named provider endpoint (API or local runtime)."""
 
-    type: ProviderType
+    type: ProviderType = Field(..., validation_alias=AliasChoices("type", "provider_type"))
     api_key_env: str | None = None
     base_url: str | None = None
+    timeout_seconds: float | None = Field(default=None, ge=0)
     extra: dict[str, Any] = Field(default_factory=dict)
 
 
