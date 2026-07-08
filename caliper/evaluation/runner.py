@@ -19,7 +19,9 @@ from caliper.tasks import create_task
 logger = structlog.get_logger(__name__)
 
 
-def _reference_for_task(task_cfg: TaskConfig, config_dir: Path) -> tuple[str | None, list[str] | None, str]:
+def _reference_for_task(
+    task_cfg: TaskConfig, config_dir: Path
+) -> tuple[str | None, list[str] | None, str, dict[str, Any]]:
     """Load the first benchmark instance reference for a configured task."""
     domain = resolve_task_domain(task_cfg)
     dataset_path = resolve_dataset_path(task_cfg, config_dir)
@@ -31,9 +33,10 @@ def _reference_for_task(task_cfg: TaskConfig, config_dir: Path) -> tuple[str | N
     task = create_task(domain, task_cfg.id, dataset_path, **task_config)
     examples = task.load_examples()
     if not examples:
-        return None, None, "python"
+        return None, None, "python", {}
     example = examples[0]
-    return example.expected_output, example.tests, example.language
+    metadata = {**example.extra, "prompt_stub": example.input}
+    return example.expected_output, example.tests, example.language, metadata
 
 
 def evaluate_results_dataframe(
@@ -48,7 +51,7 @@ def evaluate_results_dataframe(
         return []
 
     task_cfg_by_id = {task.id: task for task in config.tasks}
-    reference_cache: dict[str, tuple[str | None, list[str] | None, str]] = {}
+    reference_cache: dict[str, tuple[str | None, list[str] | None, str, dict[str, Any]]] = {}
     records: list[CellEvaluationRecord] = []
 
     for row in df.to_dict(orient="records"):
@@ -69,7 +72,7 @@ def evaluate_results_dataframe(
         if task_id not in reference_cache:
             reference_cache[task_id] = _reference_for_task(task_cfg, config_dir)
 
-        expected_output, tests, language = reference_cache[task_id]
+        expected_output, tests, language, task_metadata = reference_cache[task_id]
         domain = resolve_task_domain(task_cfg)
         prediction = str(row.get("prediction", ""))
 
@@ -79,9 +82,13 @@ def evaluate_results_dataframe(
             tests=tests,
             domain=domain,
             language=language,
-            metadata={"task_id": task_id},
+            metadata={"task_id": task_id, **task_metadata},
         )
-        metrics = evaluate_sample(sample, options=options)
+        metrics = evaluate_sample(
+            sample,
+            options=options,
+            metric_names=list(task_cfg.metrics or config.evaluation_metrics),
+        )
 
         records.append(
             CellEvaluationRecord(

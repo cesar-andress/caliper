@@ -7,7 +7,12 @@ from typing import Any, Literal, Self
 
 from pydantic import BaseModel, Field, field_validator
 
-TaskDomain = Literal["code_generation", "bug_repair", "code_summarization"]
+TaskDomain = Literal[
+    "code_generation",
+    "bug_repair",
+    "code_summarization",
+    "executable_code_generation",
+]
 Difficulty = Literal["easy", "medium", "hard"]
 
 TASK_ID_PATTERN = re.compile(r"^[a-z][a-z0-9_-]*$")

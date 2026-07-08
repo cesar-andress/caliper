@@ -19,6 +19,7 @@ from caliper.models import create_provider
 from caliper.models.base import BaseModelProvider
 from caliper.models.retry import ProviderRuntimeConfig, RetryPolicy
 from caliper.models.types import ModelRequest
+from caliper.config.metrics import resolve_primary_metric
 from caliper.prompts.loader import load_prompt
 from caliper.runners.cells import expand_cells, make_cell_id
 from caliper.runners.results import ExperimentResultRecord, ResultWriter
@@ -136,7 +137,13 @@ def build_task(
 ) -> BaseTask:
     domain = resolve_task_domain(task_cfg)
     dataset_path = resolve_dataset_path(task_cfg, config_dir)
-    task_config: dict[str, Any] = {"num_samples": task_cfg.num_samples}
+    task_config: dict[str, Any] = {}
+    if task_cfg.num_samples is not None:
+        task_config["num_samples"] = task_cfg.num_samples
+    if task_cfg.metrics:
+        task_config["metrics"] = list(task_cfg.metrics)
+    else:
+        task_config["metrics"] = list(config.evaluation_metrics)
     task_config.update(task_cfg.extra)
     return create_task(domain, task_cfg.id, dataset_path, **task_config)
 
@@ -159,7 +166,11 @@ def render_task_prompt(
 
 
 def primary_metric_name(config: ExperimentConfig, task_id: str) -> str:
-    return config.metrics_for_task(task_id)[0]
+    primary, _ = resolve_primary_metric(config)
+    task_metrics = config.metrics_for_task(task_id)
+    if primary in task_metrics:
+        return primary
+    return task_metrics[0]
 
 
 def extract_primary_score(scores: dict[str, float], metric: str) -> float:

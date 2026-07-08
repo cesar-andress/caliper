@@ -9,6 +9,17 @@ and statistical power in LLM evaluation.
 |--------|---------|
 | `variance_decomposition.py` | Descriptive stats, variance components, G/D studies |
 | `power_simulation.py` | Monte Carlo power simulation over design grids |
+| `generate_publication_analysis.py` | Publication tables, figures, LaTeX, and reports from a completed pilot |
+
+## Publication analysis (Paper 1 pilot)
+
+After the 6000-cell pilot completes:
+
+```bash
+make paper1-analysis
+```
+
+Outputs land in `experiments/paper1_ollama_pilot/paper1_analysis/` (`tables/`, `figures/`, `csv/`, `latex/`, `summary/`).
 
 ## Usage
 

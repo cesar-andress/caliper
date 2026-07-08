@@ -1,0 +1,8 @@
+{
+  "benchmark": "humaneval_plus",
+  "version": "humanevalplus_release-main",
+  "source_url": "https://raw.githubusercontent.com/evalplus/humanevalplus_release/main/HumanEvalPlus.jsonl.gz",
+  "license": "Apache-2.0",
+  "num_tasks_written": 164,
+  "num_tasks_available": 164
+}

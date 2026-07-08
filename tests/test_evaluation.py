@@ -77,14 +77,16 @@ class TestCodeMetrics:
         assert result.success is False
         assert result.metadata["status"] == "disabled"
 
-    def test_test_pass_enabled_placeholder(self) -> None:
+    def test_test_pass_enabled_executes(self) -> None:
         sample = EvaluationInput(
             prediction="def add(a,b): return a+b",
             tests=["assert add(1,2)==3"],
             domain="bug_repair",
+            metadata={"harness": "mbpp"},
         )
         result = evaluate_test_pass(sample, execution_enabled=True)
-        assert result.metadata["status"] == "not_implemented"
+        assert result.metadata["status"] == "executed"
+        assert result.value == 1.0
 
     def test_test_pass_no_tests(self) -> None:
         result = evaluate_test_pass(
@@ -139,11 +141,15 @@ class TestRegistry:
     def test_code_domain_metrics(self) -> None:
         assert metrics_for_domain("code_generation") == [
             "exact_match",
+            "normalized_code_match",
+            "syntax_check",
             "contains_expected",
             "test_pass",
         ]
         assert metrics_for_domain("bug_repair") == [
             "exact_match",
+            "normalized_code_match",
+            "syntax_check",
             "contains_expected",
             "test_pass",
         ]
@@ -163,7 +169,7 @@ class TestRegistry:
             domain="code_generation",
         )
         metrics = evaluate_sample(sample)
-        assert len(metrics) == 3
+        assert len(metrics) == 5
         assert all(hasattr(m, "name") and hasattr(m, "value") and hasattr(m, "success") for m in metrics)
 
     def test_evaluate_sample_summarization(self) -> None:
@@ -221,8 +227,8 @@ class TestEvaluateResultsFile:
         assert Path(summary["output_jsonl"]).exists()
 
         eval_df = pd.read_parquet(summary["output_parquet"])
-        assert len(eval_df) == 3  # exact_match, contains_expected, test_pass
-        assert set(eval_df["metric_name"]) == {"exact_match", "contains_expected", "test_pass"}
+        assert len(eval_df) == 1
+        assert set(eval_df["metric_name"]) == {"exact_match"}
         assert "metric_success" in eval_df.columns
 
     def test_skips_non_completed_rows(self, tmp_path: Path) -> None:

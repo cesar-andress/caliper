@@ -10,12 +10,30 @@ from typing import Any, Iterator, Literal, Self
 from pydantic import AliasChoices, BaseModel, Field, field_validator, model_validator
 
 ProviderType = Literal["mock", "random", "openai", "anthropic", "gemini", "google", "local", "ollama"]
-TaskDomainType = Literal["code_generation", "bug_repair", "code_summarization"]
+TaskDomainType = Literal[
+    "code_generation",
+    "bug_repair",
+    "code_summarization",
+    "executable_code_generation",
+]
 OutputFormat = Literal["parquet", "jsonl", "csv"]
 LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR"]
 LogFormat = Literal["json", "console"]
 
-KNOWN_METRICS = frozenset({"accuracy", "exact_match", "f1", "pass_at_k", "bleu", "rouge_l"})
+KNOWN_METRICS = frozenset({
+    "accuracy",
+    "exact_match",
+    "normalized_code_match",
+    "syntax_check",
+    "test_pass_rate",
+    "f1",
+    "pass_at_k",
+    "pass_at_1",
+    "execution_latency_ms",
+    "token_count",
+    "bleu",
+    "rouge_l",
+})
 EXPERIMENT_ID_PATTERN = re.compile(r"^[a-z][a-z0-9_-]*$")
 
 
@@ -145,6 +163,7 @@ class ExperimentConfig(BaseModel):
     temperatures: list[float] = Field(default_factory=lambda: [0.0])
     decoding: DecodingConfig = Field(default_factory=DecodingConfig)
     evaluation_metrics: list[str] = Field(default_factory=lambda: ["accuracy"])
+    primary_metric: str | None = None
     number_of_runs: int = Field(default=1, ge=1)
 
     output: OutputConfig = Field(default_factory=OutputConfig)
@@ -221,6 +240,26 @@ class ExperimentConfig(BaseModel):
                     names = ", ".join(sorted(task_unknown))
                     msg = f"task '{task.id}' has unknown metric(s): {names}"
                     raise ValueError(msg)
+
+        if self.primary_metric is not None:
+            allowed: set[str] = set(self.evaluation_metrics)
+            for task in self.tasks:
+                if task.metrics:
+                    allowed.update(task.metrics)
+            if self.primary_metric not in allowed:
+                names = ", ".join(sorted(allowed))
+                msg = (
+                    f"primary_metric '{self.primary_metric}' is not listed in "
+                    f"evaluation_metrics or task metrics; configured: {names}"
+                )
+                raise ValueError(msg)
+            if self.primary_metric not in KNOWN_METRICS:
+                known = ", ".join(sorted(KNOWN_METRICS))
+                msg = (
+                    f"primary_metric '{self.primary_metric}' is unknown; "
+                    f"known metrics: {known}"
+                )
+                raise ValueError(msg)
 
         return self
 

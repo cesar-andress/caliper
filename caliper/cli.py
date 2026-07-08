@@ -101,6 +101,29 @@ def validate(config: Path) -> None:
 
 @main.command()
 @click.argument(
+    "experiment_dir",
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+)
+@click.option("--limit", default=5, show_default=True, type=int, help="Number of rows to show.")
+def inspect(experiment_dir: Path, limit: int) -> None:
+    """Inspect predictions, references, and metric values from a completed experiment."""
+    from caliper.evaluation.inspect_output import format_inspection, inspect_experiment, metric_means_from_results
+    from caliper.storage.formats import read_results
+
+    records = inspect_experiment(experiment_dir, limit=limit)
+    click.echo(format_inspection(records))
+
+    results_path = experiment_dir / "results.parquet"
+    if results_path.exists():
+        means = metric_means_from_results(read_results(results_path))
+        if means:
+            click.echo("\nMetric means (all completed cells):")
+            for name in sorted(means):
+                click.echo(f"  {name}: {means[name]:.4f}")
+
+
+@main.command()
+@click.argument(
     "results_path",
     type=click.Path(exists=True, path_type=Path),
 )
@@ -178,6 +201,137 @@ def export_artifact_cmd(experiment_dir: Path, force: bool) -> None:
         raise SystemExit(1)
 
 
+@main.command("validate-confirmatory")
+@click.option(
+    "--benchmark",
+    type=click.Choice(["humaneval", "mbpp"], case_sensitive=False),
+    default="humaneval",
+    show_default=True,
+    help="Confirmatory benchmark to validate.",
+)
+@click.option("--model", default=None, help="Model id from confirmatory config (default: qwen25_coder_7b).")
+@click.option(
+    "--prompt",
+    default=None,
+    type=click.Choice(["minimal", "explicit_reasoning", "testing_oriented", "professional"]),
+    help="Controlled prompt variant (default: minimal).",
+)
+@click.option("--temperature", default=0.0, show_default=True, type=float)
+@click.option("--runs", default=1, show_default=True, type=int)
+@click.option("--tasks", default=3, show_default=True, type=int, help="Number of benchmark tasks to exercise.")
+@click.option("--verbose", is_flag=True, help="Print per-stage validation output.")
+def validate_confirmatory_cmd(
+    benchmark: str,
+    model: str | None,
+    prompt: str | None,
+    temperature: float,
+    runs: int,
+    tasks: int,
+    verbose: bool,
+) -> None:
+    """Run end-to-end pre-flight validation for a confirmatory experiment."""
+    from caliper.validation.config_builder import DEFAULT_MODEL, DEFAULT_PROMPT
+    from caliper.validation.confirmatory import run_confirmatory_validation
+
+    report = run_confirmatory_validation(
+        benchmark=benchmark,
+        model=model or DEFAULT_MODEL,
+        prompt=prompt or DEFAULT_PROMPT,
+        temperature=temperature,
+        runs=runs,
+        tasks=tasks,
+        verbose=verbose,
+    )
+
+    click.echo(f"Pre-flight validation output: {report.output_dir}")
+    click.echo(f"Ready to launch: {'YES' if report.ready_to_launch else 'NO'}")
+    click.echo(f"Report: {Path(report.output_dir) / 'validation_report.md'}")
+    click.echo(f"Checklist: {Path(report.output_dir) / 'launch_checklist.md'}")
+
+    click.echo("\nStage summary:")
+    for row in report.status_table():
+        click.echo(f"  [{row['status']}] {row['stage']}: {row['message']}")
+
+    if report.timing.observations:
+        click.echo(
+            f"\nTiming: {report.timing.per_observation_ms():.0f} ms/observation "
+            f"(est. 9,600 cells ≈ {report.timing.estimate_hours(9600):.1f} h)"
+        )
+
+    if not report.ready_to_launch:
+        click.echo("\nFailures:")
+        for failure in report.failures:
+            click.echo(f"  - {failure.stage.value}: {failure.root_cause or failure.message}")
+            if failure.recommended_fix:
+                click.echo(f"    Fix: {failure.recommended_fix}")
+        raise SystemExit(1)
+
+
+@main.group()
+def benchmarks() -> None:
+    """Official benchmark loaders and confirmatory study preparation."""
+
+
+@benchmarks.command("materialize")
+@click.option(
+    "--output-dir",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=Path("data/benchmarks"),
+    show_default=True,
+)
+@click.option("--benchmark", type=click.Choice(["humaneval_plus", "mbpp", "all"]), default="all")
+@click.option("--limit", type=int, default=None, help="Optional cap on tasks written.")
+def benchmarks_materialize(output_dir: Path, benchmark: str, limit: int | None) -> None:
+    """Download/parse official benchmarks and write CALIPER JSONL datasets."""
+    from caliper.benchmarks.materialize import materialize_all, materialize_benchmark
+
+    if benchmark == "all":
+        paths = materialize_all(output_dir, limit=limit)
+        for name, path in paths.items():
+            click.echo(f"  {name}: {path}")
+    else:
+        path = materialize_benchmark(benchmark, output_dir, limit=limit)  # type: ignore[arg-type]
+        click.echo(f"Wrote {path}")
+
+
+@benchmarks.command("write-configs")
+@click.option(
+    "--configs-dir",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=Path("configs/paper1"),
+    show_default=True,
+)
+@click.option(
+    "--data-dir",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=Path("data/benchmarks"),
+    show_default=True,
+)
+@click.option("--task-subset-size", type=int, default=40, show_default=True)
+@click.option("--seed", type=int, default=20260404, show_default=True)
+def benchmarks_write_configs(
+    configs_dir: Path,
+    data_dir: Path,
+    task_subset_size: int,
+    seed: int,
+) -> None:
+    """Generate Paper 1 confirmatory YAML configs (HumanEval+ and MBPP)."""
+    from caliper.benchmarks.experiment_yaml import expected_cell_count, write_confirmatory_configs
+
+    paths = write_confirmatory_configs(
+        configs_dir=configs_dir,
+        data_dir=data_dir,
+        task_subset_size=task_subset_size,
+        seed=seed,
+    )
+    cells = expected_cell_count(task_subset_size)
+    for name, path in paths.items():
+        click.echo(f"  {name}: {path} ({cells} expected cells)")
+    click.echo(
+        "Confirmatory configs ready. Run `caliper validate -c <config>` before launching."
+    )
+
+
 @main.group()
 def ollama() -> None:
     """Inspect and manage local Ollama models."""
@@ -218,15 +372,30 @@ def analyze() -> None:
 
 @analyze.command("variance")
 @click.option("--results", "-r", required=True, type=click.Path(exists=True, path_type=Path))
-@click.option("--metric", default=None, help="Filter to one metric name.")
-def analyze_variance(results: Path, metric: str | None) -> None:
+@click.option("--metric", default=None, help="Metric name (defaults to config primary_metric).")
+@click.option(
+    "--config", "-c",
+    type=click.Path(exists=True, path_type=Path),
+    default=None,
+    help="Experiment YAML (defaults to config.yaml beside results).",
+)
+def analyze_variance(results: Path, metric: str | None, config: Path | None) -> None:
     """Decompose score variance by experimental factor (Paper 1)."""
     import pandas as pd
 
+    from caliper.config.metrics import resolve_analysis_metric
     from caliper.statistics.descriptive import descriptive_by_factor
     from caliper.statistics.gtheory import estimate_g_variance_components
     from caliper.statistics.prepare import prepare_results_table
     from caliper.statistics.variance import decompose_variance
+
+    resolved_metric, warnings = resolve_analysis_metric(
+        metric=metric,
+        results_path=results,
+        config_path=config,
+    )
+    for warning in warnings:
+        click.echo(f"Warning: {warning}", err=True)
 
     suffix = results.suffix.lower()
     if suffix == ".parquet":
@@ -236,7 +405,9 @@ def analyze_variance(results: Path, metric: str | None) -> None:
     else:
         raw = pd.read_csv(results)
 
-    df = prepare_results_table(raw, metric_name=metric)
+    df = prepare_results_table(raw, metric_name=resolved_metric)
+    if resolved_metric is not None:
+        click.echo(f"Using metric: {resolved_metric}")
     click.echo("Variance decomposition (sequential ANOVA):")
     components = decompose_variance(df)
     for key, value in components.as_dict().items():
@@ -258,16 +429,37 @@ def analyze_variance(results: Path, metric: str | None) -> None:
 
 @analyze.command("power")
 @click.option("--results", "-r", required=True, type=click.Path(exists=True, path_type=Path))
-@click.option("--metric", default=None, help="Filter to one metric name.")
+@click.option("--metric", default=None, help="Metric name (defaults to config primary_metric).")
+@click.option(
+    "--config", "-c",
+    type=click.Path(exists=True, path_type=Path),
+    default=None,
+    help="Experiment YAML (defaults to config.yaml beside results).",
+)
 @click.option("--effect-size", default=0.05, show_default=True, type=float)
 @click.option("--simulations", default=300, show_default=True, type=int)
-def analyze_power(results: Path, metric: str | None, effect_size: float, simulations: int) -> None:
+def analyze_power(
+    results: Path,
+    metric: str | None,
+    config: Path | None,
+    effect_size: float,
+    simulations: int,
+) -> None:
     """Simulate statistical power for Paper 1 designs."""
     import pandas as pd
 
+    from caliper.config.metrics import resolve_analysis_metric
     from caliper.statistics.gtheory import estimate_g_variance_components
     from caliper.statistics.power_sim import simulate_power_grid
     from caliper.statistics.prepare import prepare_results_table
+
+    resolved_metric, warnings = resolve_analysis_metric(
+        metric=metric,
+        results_path=results,
+        config_path=config,
+    )
+    for warning in warnings:
+        click.echo(f"Warning: {warning}", err=True)
 
     suffix = results.suffix.lower()
     if suffix == ".parquet":
@@ -277,7 +469,9 @@ def analyze_power(results: Path, metric: str | None, effect_size: float, simulat
     else:
         raw = pd.read_csv(results)
 
-    df = prepare_results_table(raw, metric_name=metric)
+    df = prepare_results_table(raw, metric_name=resolved_metric)
+    if resolved_metric is not None:
+        click.echo(f"Using metric: {resolved_metric}")
     components = estimate_g_variance_components(df).components
     grid = simulate_power_grid(
         components,
@@ -296,7 +490,13 @@ def analyze_power(results: Path, metric: str | None, effect_size: float, simulat
     "results_path",
     type=click.Path(exists=True, path_type=Path),
 )
-@click.option("--metric", "-m", default=None, help="Metric name to analyze.")
+@click.option("--metric", "-m", default=None, help="Metric name (defaults to config primary_metric).")
+@click.option(
+    "--config", "-c",
+    type=click.Path(exists=True, path_type=Path),
+    default=None,
+    help="Experiment YAML (defaults to config.yaml beside results).",
+)
 @click.option("--n-bootstrap", default=500, show_default=True, type=int, help="Bootstrap iterations per facet.")
 @click.option("--seed", default=42, show_default=True, type=int)
 @click.option(
@@ -314,20 +514,32 @@ def analyze_power(results: Path, metric: str | None, effect_size: float, simulat
 def ranking_fragility_cmd(
     results_path: Path,
     metric: str | None,
+    config: Path | None,
     n_bootstrap: int,
     seed: int,
     output_dir: Path,
     reports_dir: Path | None,
 ) -> None:
     """Quantify ranking fragility under task/run/prompt bootstrap (Paper 2)."""
+    from caliper.config.metrics import resolve_analysis_metric
     from caliper.ranking import run_ranking_fragility_from_file
+
+    resolved_metric, warnings = resolve_analysis_metric(
+        metric=metric,
+        results_path=results_path,
+        config_path=config,
+    )
+    for warning in warnings:
+        click.echo(f"Warning: {warning}", err=True)
+    if resolved_metric is not None:
+        click.echo(f"Using metric: {resolved_metric}")
 
     if reports_dir is None:
         reports_dir = output_dir / "plots"
 
     outputs = run_ranking_fragility_from_file(
         results_path,
-        metric_name=metric,
+        metric_name=resolved_metric,
         n_bootstrap=n_bootstrap,
         seed=seed,
         output_dir=output_dir,
@@ -341,6 +553,36 @@ def ranking_fragility_cmd(
     click.echo(f"  Fragility idx: {outputs.summary['fragility_index'].mean():.4f} (mean)")
     for name, path in outputs.plot_paths.items():
         click.echo(f"  Plot [{name}]: {path}")
+
+
+@analyze.command("robustness")
+@click.option(
+    "--experiment-dir",
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+    default=Path("experiments/paper1_ollama_pilot"),
+    show_default=True,
+    help="Completed experiment directory with results/statistical_dataset.",
+)
+@click.option("--metric", default=None, help="Primary metric (defaults to config primary_metric).")
+@click.option("--n-bootstrap", default=5000, show_default=True, type=int, help="Ranking bootstrap iterations.")
+@click.option("--fast", is_flag=True, help="Use 500 bootstrap iterations for a quick run.")
+def analyze_robustness(
+    experiment_dir: Path,
+    metric: str | None,
+    n_bootstrap: int,
+    fast: bool,
+) -> None:
+    """Run robust ANOVA, convergence, sensitivity, and bootstrap analyses (Paper 1)."""
+    from caliper.statistics.robustness_report import run_robustness_analysis
+
+    iterations = 500 if fast else n_bootstrap
+    out = run_robustness_analysis(
+        experiment_dir,
+        metric=metric,
+        n_bootstrap=iterations,
+    )
+    click.echo(f"Robustness analysis complete: {out}")
+    click.echo(f"  Summary: {out / 'summary' / 'robustness_section.md'}")
 
 
 @analyze.command("fragility")

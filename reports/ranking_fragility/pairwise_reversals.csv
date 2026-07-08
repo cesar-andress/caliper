@@ -1,0 +1,16 @@
+,model_a,model_b,reversal_probability,n_iterations
+0,deepseek_coder_v2_lite,qwen25_coder_7b,0.05733333333333333,1500
+1,deepseek_coder_v2_lite,llama31_8b,0.008,1500
+2,deepseek_coder_v2_lite,qwen25_coder_32b,0.008666666666666666,1500
+3,deepseek_coder_v2_lite,qwen25_coder_14b,0.0,1500
+4,deepseek_coder_v2_lite,qwen3_32b,0.0,1500
+5,qwen25_coder_7b,llama31_8b,0.0,1500
+6,qwen25_coder_7b,qwen25_coder_32b,0.0,1500
+7,qwen25_coder_7b,qwen25_coder_14b,0.0,1500
+8,qwen25_coder_7b,qwen3_32b,0.0,1500
+9,llama31_8b,qwen25_coder_32b,0.16,1500
+10,llama31_8b,qwen25_coder_14b,0.25466666666666665,1500
+11,llama31_8b,qwen3_32b,0.024,1500
+12,qwen25_coder_32b,qwen25_coder_14b,0.2673333333333333,1500
+13,qwen25_coder_32b,qwen3_32b,0.024,1500
+14,qwen25_coder_14b,qwen3_32b,0.0033333333333333335,1500

@@ -1,4 +1,4 @@
-"""Code generation benchmark task."""
+"""Code generation task scoring with extraction-aware metrics."""
 
 from __future__ import annotations
 
@@ -14,21 +14,44 @@ class CodeGenerationTask(BaseTask):
     domain = "code_generation"
 
     def score(self, example: TaskMetadata, prediction: str) -> dict[str, float]:
-        scores: dict[str, float] = {
-            "exact_match": exact_match_score(example.expected_output, prediction),
+        from caliper.evaluation.code_metrics import (
+            exact_match,
+            normalized_code_match,
+            syntax_check,
+        )
+        from caliper.evaluation.context import EvaluationInput
+
+        sample = EvaluationInput(
+            prediction=prediction,
+            expected_output=example.expected_output,
+            tests=example.tests,
+            domain=self.domain,
+            language=example.language,
+        )
+        scorers = {
+            "exact_match": lambda: exact_match(sample).value,
+            "normalized_code_match": lambda: normalized_code_match(sample).value,
+            "syntax_check": lambda: syntax_check(sample).value,
+            "test_pass_rate": lambda: self._estimate_test_pass_rate(example, prediction),
         }
-        if example.tests:
+        metric_names = self.config.get("metrics", ["exact_match"])
+        scores: dict[str, float] = {}
+
+        for metric_name in metric_names:
+            if metric_name in scorers:
+                scores[metric_name] = scorers[metric_name]()
+
+        if not scores:
+            scores["exact_match"] = exact_match_score(example.expected_output, prediction)
+
+        if example.tests and "tests_present" not in scores:
             scores["tests_present"] = 1.0
-            scores["test_pass_rate"] = self._estimate_test_pass_rate(example, prediction)
+            if "test_pass_rate" not in scores:
+                scores["test_pass_rate"] = self._estimate_test_pass_rate(example, prediction)
         return scores
 
     def _estimate_test_pass_rate(self, example: TaskMetadata, prediction: str) -> float:
-        """Heuristic pass rate without executing code.
-
-        Checks whether each test assertion string appears in the prediction
-        or matches the expected output combined with the prediction.
-        Real execution will replace this in a later phase.
-        """
+        """Heuristic pass rate without executing code."""
         if not example.tests:
             return 0.0
         combined = normalize_text(f"{prediction}\n{example.expected_output or ''}")

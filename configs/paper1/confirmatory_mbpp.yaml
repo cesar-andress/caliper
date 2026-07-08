@@ -1,0 +1,700 @@
+# Paper 1 confirmatory study — mbpp
+# 40 tasks × 6 models × 4 prompts × 2 temperatures × 5 runs = 9600 cells
+experiment_id: paper1_confirmatory_mbpp
+description: Paper 1 confirmatory study on MBPP with controlled prompts, sandboxed
+  pass@1 evaluation, and factorial local-model design.
+random_seed: 20260404
+primary_metric: pass_at_1
+evaluation_metrics:
+- pass_at_1
+- syntax_check
+- normalized_code_match
+- execution_latency_ms
+- token_count
+providers:
+  ollama_local:
+    provider_type: ollama
+    base_url: http://localhost:11434
+    timeout_seconds: 300
+models:
+- id: qwen25_coder_7b
+  provider: ollama_local
+  model_id: qwen2.5-coder:7b
+- id: qwen25_coder_14b
+  provider: ollama_local
+  model_id: qwen2.5-coder:14b
+- id: qwen25_coder_32b
+  provider: ollama_local
+  model_id: qwen2.5-coder:32b
+- id: deepseek_coder_v2_lite
+  provider: ollama_local
+  model_id: deepseek-coder-v2:lite
+- id: llama31_8b
+  provider: ollama_local
+  model_id: llama3.1:8b
+- id: qwen3_32b
+  provider: ollama_local
+  model_id: qwen3:32b
+prompt_variants:
+- id: minimal
+  template: 'Complete the following Python programming task.
+
+
+    {input}
+
+
+    Respond with exactly one Python code block using triple backticks (` ```python
+    `). Do not include explanations, commentary, or text outside the code block.'
+- id: explicit_reasoning
+  template: 'Solve the following Python programming task. You may reason internally,
+    but your response must contain only code in the required format.
+
+
+    {input}
+
+
+    Respond with exactly one Python code block using triple backticks (` ```python
+    `). Do not include explanations, commentary, or text outside the code block.'
+- id: testing_oriented
+  template: 'Write Python code for the following task so that it passes hidden unit
+    tests.
+
+
+    {input}
+
+
+    Respond with exactly one Python code block using triple backticks (` ```python
+    `). Do not include explanations, commentary, or text outside the code block.'
+- id: professional
+  template: 'As a professional Python developer, implement the following task with
+    clear, maintainable code.
+
+
+    {input}
+
+
+    Respond with exactly one Python code block using triple backticks (` ```python
+    `). Do not include explanations, commentary, or text outside the code block.'
+tasks:
+- id: task-mbpp-001
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0044
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-002
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0054
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-003
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0064
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-004
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0065
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-005
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0079
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-006
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0121
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-007
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0187
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-008
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0188
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-009
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0287
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-010
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0299
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-011
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0320
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-012
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0327
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-013
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0360
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-014
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0361
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-015
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0377
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-016
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0393
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-017
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0415
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-018
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0444
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-019
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0457
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-020
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0464
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-021
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0503
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-022
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0525
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-023
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0559
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-024
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0579
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-025
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0639
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-026
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0667
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-027
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0668
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-028
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0686
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-029
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0740
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-030
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0741
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-031
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0768
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-032
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0810
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-033
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0814
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-034
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0826
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-035
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0848
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-036
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0887
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-037
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0915
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-038
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0928
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-039
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0933
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-mbpp-040
+  domain: executable_code_generation
+  dataset: data/benchmarks/mbpp.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: mbpp-0942
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+temperatures:
+- 0.0
+- 0.2
+number_of_runs: 5
+decoding:
+  max_tokens: 1024
+  top_p: 1.0
+output:
+  directory: experiments/paper1_confirmatory_mbpp
+  format: parquet
+logging:
+  level: INFO
+  log_to_file: true
+  log_format: json
+execution:
+  shuffle: true
+  parallel_workers: 1
+study_metadata:
+  study_type: confirmatory
+  benchmark: mbpp
+  prompt_protocol: controlled_output_format_v1
+  pilot_reference: experiments/paper1_ollama_pilot

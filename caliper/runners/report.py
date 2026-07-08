@@ -9,6 +9,7 @@ from typing import Any
 import pandas as pd
 
 from caliper.config.loader import format_config_summary
+from caliper.config.metrics import resolve_primary_metric
 from caliper.config.schema import ExperimentConfig
 from caliper.runners.reproducibility import (
     configuration_hash,
@@ -18,6 +19,7 @@ from caliper.runners.reproducibility import (
 from caliper.runners.cells import expand_cells
 from caliper.statistics.descriptive import descriptive_all_factors
 from caliper.statistics.prepare import prepare_results_table
+from caliper.evaluation.inspect_output import metric_means_from_results
 
 
 def _format_factorial_section(config: ExperimentConfig) -> str:
@@ -61,19 +63,57 @@ def _dataframe_to_markdown(df: pd.DataFrame) -> str:
     return "\n".join(lines)
 
 
-def _format_descriptive_stats(df: pd.DataFrame) -> str:
+def _format_metric_means(df: pd.DataFrame) -> str:
+    means = metric_means_from_results(df)
+    if not means:
+        return "## Metric means\n\n_No metric scores available._\n"
+
+    lines = ["## Metric means", ""]
+    for name in sorted(means):
+        lines.append(f"- **{name}**: {means[name]:.4f}")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _format_output_quality_note(means: dict[str, float]) -> str:
+    exact = means.get("exact_match")
+    normalized = means.get("normalized_code_match")
+    if exact is not None and normalized is not None and exact == 0.0 and normalized > 0.0:
+        return (
+            "## Output quality note\n\n"
+            "Strict exact_match is zero because model outputs include Markdown or "
+            "additional explanation; normalized_code_match is the primary "
+            "code-equivalence metric.\n"
+        )
+    return ""
+
+
+def _format_descriptive_stats(
+    df: pd.DataFrame,
+    *,
+    primary_metric: str,
+    warnings: list[str],
+) -> str:
     if df.empty:
         return "## Descriptive statistics\n\n_No completed results to summarize._\n"
 
     try:
-        prepared = prepare_results_table(df)
+        prepared = prepare_results_table(df, metric_name=primary_metric)
     except ValueError:
         return "## Descriptive statistics\n\n_Results table could not be normalized._\n"
 
     factor_cols = [col for col in ("model", "task_id", "prompt_id", "temperature") if col in prepared.columns]
     tables = descriptive_all_factors(prepared, factor_cols)
 
-    lines = ["## Descriptive statistics", ""]
+    lines = [
+        "## Descriptive statistics",
+        "",
+        f"**Primary metric**: {primary_metric}",
+        "",
+    ]
+    for warning in warnings:
+        lines.append(f"> **Warning**: {warning}")
+        lines.append("")
     for factor, table in tables.items():
         lines.append(f"### By `{factor}`")
         lines.append("")
@@ -148,6 +188,8 @@ def generate_report(
 ) -> Path:
     """Write ``report.md`` for a completed experiment."""
     generated_at = datetime.now().isoformat()
+    primary_metric, primary_warnings = resolve_primary_metric(config)
+    metric_means = metric_means_from_results(results_df)
     sections = [
         f"# Experiment report: {config.experiment_id}",
         "",
@@ -161,7 +203,13 @@ def generate_report(
         "",
         _format_factorial_section(config),
         _format_execution_summary(manifest),
-        _format_descriptive_stats(results_df),
+        _format_metric_means(results_df),
+        _format_output_quality_note(metric_means),
+        _format_descriptive_stats(
+            results_df,
+            primary_metric=primary_metric,
+            warnings=primary_warnings,
+        ),
         _format_failures(results_df),
         _format_hardware(manifest),
         _format_reproducibility(config, manifest),

@@ -32,6 +32,15 @@ def _resolve_column(df: pd.DataFrame, canonical: str) -> str | None:
     return None
 
 
+def _score_from_dict(scores: object, metric_name: str) -> float | None:
+    if not isinstance(scores, dict):
+        return None
+    value = scores.get(metric_name)
+    if value is None:
+        return None
+    return float(value)
+
+
 def prepare_results_table(
     df: pd.DataFrame,
     *,
@@ -41,7 +50,7 @@ def prepare_results_table(
 
     Args:
         df: Raw results or evaluations DataFrame.
-        metric_name: If provided, filter to this metric only.
+        metric_name: If provided, select this metric (from ``scores`` dict when present).
 
     Returns:
         Copy with canonical column names.
@@ -50,6 +59,7 @@ def prepare_results_table(
         ValueError: If required columns cannot be resolved.
     """
     out = df.copy()
+
     rename: dict[str, str] = {}
     for canonical in STANDARD_COLUMNS:
         if canonical in out.columns:
@@ -59,6 +69,15 @@ def prepare_results_table(
             rename[source] = canonical
 
     out = out.rename(columns=rename)
+
+    if metric_name is not None and "scores" in out.columns:
+        extracted = out["scores"].apply(
+            lambda scores: _score_from_dict(scores, metric_name),
+        )
+        if extracted.notna().any():
+            out["metric_value"] = extracted
+            out["metric_name"] = metric_name
+            out = out[extracted.notna()].copy()
 
     missing = [col for col in ("model", "task_id", "metric_value") if col not in out.columns]
     if missing:
@@ -75,7 +94,12 @@ def prepare_results_table(
         out["temperature"] = 0.0
 
     if metric_name is not None:
-        out = out[out["metric_name"] == metric_name].copy()
+        if "metric_name" in out.columns:
+            out = out[out["metric_name"] == metric_name].copy()
+        elif "scores" not in out.columns:
+            metric_col = _resolve_column(out, "metric_name")
+            if metric_col is not None:
+                out = out[out[metric_col] == metric_name].copy()
 
     out["metric_value"] = out["metric_value"].astype(float)
     return out.reset_index(drop=True)

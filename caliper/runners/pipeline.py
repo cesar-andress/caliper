@@ -12,7 +12,7 @@ import structlog
 import yaml
 
 from caliper.config.schema import ExperimentConfig
-from caliper.evaluation.runner import evaluate_results_file
+from caliper.config.metrics import resolve_primary_metric
 from caliper.runners.artifact_export import export_artifact
 from caliper.runners.manifest_builder import build_manifest, write_experiment_manifest
 from caliper.runners.report import generate_report
@@ -50,13 +50,18 @@ def copy_config_snapshot(config_path: Path | None, output_dir: Path, config: Exp
     return target
 
 
-def build_statistical_dataset(results_df: pd.DataFrame, output_dir: Path) -> Path | None:
+def build_statistical_dataset(
+    results_df: pd.DataFrame,
+    output_dir: Path,
+    *,
+    primary_metric: str | None = None,
+) -> Path | None:
     """Normalize results into the Paper 1 statistical schema."""
     completed = results_df[results_df["status"] == "completed"].copy() if not results_df.empty else results_df
     if completed.empty:
         return None
 
-    prepared = prepare_results_table(completed)
+    prepared = prepare_results_table(completed, metric_name=primary_metric)
     path = output_dir / "statistical_dataset.parquet"
     write_results(prepared, path, fmt="parquet")
     return path
@@ -88,6 +93,8 @@ def finalize_experiment(
 
     eval_summary: dict[str, Any] = {}
     if evaluate and parquet_path.exists():
+        from caliper.evaluation.runner import evaluate_results_file
+
         eval_summary = evaluate_results_file(
             parquet_path,
             config,
@@ -95,7 +102,11 @@ def finalize_experiment(
             output_dir=output_dir,
         )
 
-    stats_path = build_statistical_dataset(results_df, output_dir)
+    stats_path = build_statistical_dataset(
+        results_df,
+        output_dir,
+        primary_metric=resolve_primary_metric(config)[0],
+    )
 
     str_paths = {k: str(v) for k, v in (result_paths or {}).items()}
     if stats_path is not None:

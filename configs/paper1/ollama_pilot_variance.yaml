@@ -52,6 +52,9 @@ tasks:
     num_samples: 1
     metrics:
       - exact_match
+      - normalized_code_match
+      - syntax_check
+      - test_pass_rate
     extra:
       filter_task_id: pilot-001
   - id: task-pilot-002
@@ -60,6 +63,9 @@ tasks:
     num_samples: 1
     metrics:
       - exact_match
+      - normalized_code_match
+      - syntax_check
+      - test_pass_rate
     extra:
       filter_task_id: pilot-002
   - id: task-pilot-003
@@ -68,6 +74,9 @@ tasks:
     num_samples: 1
     metrics:
       - exact_match
+      - normalized_code_match
+      - syntax_check
+      - test_pass_rate
     extra:
       filter_task_id: pilot-003
   - id: task-pilot-004
@@ -76,6 +85,9 @@ tasks:
     num_samples: 1
     metrics:
       - exact_match
+      - normalized_code_match
+      - syntax_check
+      - test_pass_rate
     extra:
       filter_task_id: pilot-004
   - id: task-pilot-005
@@ -84,6 +96,9 @@ tasks:
     num_samples: 1
     metrics:
       - exact_match
+      - normalized_code_match
+      - syntax_check
+      - test_pass_rate
     extra:
       filter_task_id: pilot-005
   - id: task-pilot-006
@@ -92,6 +107,9 @@ tasks:
     num_samples: 1
     metrics:
       - exact_match
+      - normalized_code_match
+      - syntax_check
+      - test_pass_rate
     extra:
       filter_task_id: pilot-006
   - id: task-pilot-007
@@ -100,6 +118,9 @@ tasks:
     num_samples: 1
     metrics:
       - exact_match
+      - normalized_code_match
+      - syntax_check
+      - test_pass_rate
     extra:
       filter_task_id: pilot-007
   - id: task-pilot-008
@@ -108,6 +129,9 @@ tasks:
     num_samples: 1
     metrics:
       - exact_match
+      - normalized_code_match
+      - syntax_check
+      - test_pass_rate
     extra:
       filter_task_id: pilot-008
   - id: task-pilot-009
@@ -116,6 +140,9 @@ tasks:
     num_samples: 1
     metrics:
       - exact_match
+      - normalized_code_match
+      - syntax_check
+      - test_pass_rate
     extra:
       filter_task_id: pilot-009
   - id: task-pilot-010
@@ -124,6 +151,9 @@ tasks:
     num_samples: 1
     metrics:
       - exact_match
+      - normalized_code_match
+      - syntax_check
+      - test_pass_rate
     extra:
       filter_task_id: pilot-010
   - id: task-pilot-011
@@ -132,6 +162,9 @@ tasks:
     num_samples: 1
     metrics:
       - exact_match
+      - normalized_code_match
+      - syntax_check
+      - test_pass_rate
     extra:
       filter_task_id: pilot-011
   - id: task-pilot-012
@@ -140,6 +173,9 @@ tasks:
     num_samples: 1
     metrics:
       - exact_match
+      - normalized_code_match
+      - syntax_check
+      - test_pass_rate
     extra:
       filter_task_id: pilot-012
   - id: task-pilot-013
@@ -148,6 +184,9 @@ tasks:
     num_samples: 1
     metrics:
       - exact_match
+      - normalized_code_match
+      - syntax_check
+      - test_pass_rate
     extra:
       filter_task_id: pilot-013
   - id: task-pilot-014
@@ -156,6 +195,9 @@ tasks:
     num_samples: 1
     metrics:
       - exact_match
+      - normalized_code_match
+      - syntax_check
+      - test_pass_rate
     extra:
       filter_task_id: pilot-014
   - id: task-pilot-015
@@ -164,6 +206,9 @@ tasks:
     num_samples: 1
     metrics:
       - exact_match
+      - normalized_code_match
+      - syntax_check
+      - test_pass_rate
     extra:
       filter_task_id: pilot-015
   - id: task-pilot-016
@@ -172,6 +217,9 @@ tasks:
     num_samples: 1
     metrics:
       - exact_match
+      - normalized_code_match
+      - syntax_check
+      - test_pass_rate
     extra:
       filter_task_id: pilot-016
   - id: task-pilot-017
@@ -180,6 +228,9 @@ tasks:
     num_samples: 1
     metrics:
       - exact_match
+      - normalized_code_match
+      - syntax_check
+      - test_pass_rate
     extra:
       filter_task_id: pilot-017
   - id: task-pilot-018
@@ -188,6 +239,9 @@ tasks:
     num_samples: 1
     metrics:
       - exact_match
+      - normalized_code_match
+      - syntax_check
+      - test_pass_rate
     extra:
       filter_task_id: pilot-018
   - id: task-pilot-019
@@ -196,6 +250,9 @@ tasks:
     num_samples: 1
     metrics:
       - exact_match
+      - normalized_code_match
+      - syntax_check
+      - test_pass_rate
     extra:
       filter_task_id: pilot-019
   - id: task-pilot-020
@@ -204,6 +261,9 @@ tasks:
     num_samples: 1
     metrics:
       - exact_match
+      - normalized_code_match
+      - syntax_check
+      - test_pass_rate
     extra:
       filter_task_id: pilot-020
 
@@ -217,6 +277,11 @@ decoding:
 
 evaluation_metrics:
   - exact_match
+  - normalized_code_match
+  - syntax_check
+  - test_pass_rate
+
+primary_metric: normalized_code_match
 
 number_of_runs: 5
 

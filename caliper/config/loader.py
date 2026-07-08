@@ -89,6 +89,7 @@ def format_config_summary(config: ExperimentConfig) -> str:
         f"Temperatures: {config.temperatures}",
         f"Runs: {config.number_of_runs}",
         f"Metrics: {', '.join(config.evaluation_metrics)}",
+        f"Primary metric: {config.primary_metric or '(default: first evaluation metric)'}",
         f"Factorial: {axis_summary} = {config.total_combinations()} combinations",
         f"Output: {config.output.directory}",
     ]

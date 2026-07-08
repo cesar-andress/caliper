@@ -1,0 +1,8 @@
+{
+  "benchmark": "mbpp",
+  "version": "google-research-mbpp-sanitized-v1",
+  "source_url": "https://raw.githubusercontent.com/google-research/google-research/master/mbpp/mbpp.jsonl",
+  "license": "CC-BY-4.0",
+  "num_tasks_written": 974,
+  "num_tasks_available": 974
+}

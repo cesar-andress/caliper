@@ -1,24 +1,27 @@
-.PHONY: install install-dev lint format typecheck test test-cov clean run help
+.PHONY: install install-dev lint format typecheck test test-cov clean run help paper1-analysis paper1-robustness paper1-confirmatory-prep paper1-confirmatory-analysis paper1-confirmatory-robustness paper1-preflight
 
-PYTHON ?= python3
+PYTHON ?= python3.12
 VENV ?= .venv
+VENV_PYTHON := $(VENV)/bin/python
 PIP := $(VENV)/bin/pip
 PYTEST := $(VENV)/bin/pytest
 RUFF := $(VENV)/bin/ruff
 MYPY := $(VENV)/bin/mypy
-CALIPER := $(VENV)/bin/caliper
+CALIPER := $(VENV_PYTHON) -m caliper
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
-$(VENV)/bin/activate:
+$(VENV)/bin/python:
 	$(PYTHON) -m venv $(VENV)
 	$(PIP) install --upgrade pip
 
-install: $(VENV)/bin/activate ## Install package in production mode
+install: $(VENV)/bin/python ## Install package in production mode
+	@$(VENV_PYTHON) -c "import sys; ver=sys.version_info; assert ver >= (3, 11), f'Python 3.11+ required, got {sys.version}'"
 	$(PIP) install -e .
 
-install-dev: $(VENV)/bin/activate ## Install package with dev dependencies
+install-dev: $(VENV)/bin/python ## Install package with dev dependencies
+	@$(VENV_PYTHON) -c "import sys; ver=sys.version_info; assert ver >= (3, 11), f'Python 3.11+ required, got {sys.version}'"
 	$(PIP) install -e ".[dev]"
 
 lint: ## Run ruff linter
@@ -37,8 +40,31 @@ test: ## Run test suite
 test-cov: ## Run tests with coverage report
 	$(PYTEST) tests/ --cov=caliper --cov-report=term-missing
 
-run: ## Run example experiment (dry-run)
+run: install ## Run example experiment (dry-run)
 	$(CALIPER) run --config configs/examples/basic_experiment.yaml --dry-run
+
+paper1-analysis: ## Generate Paper 1 publication tables/figures from pilot outputs
+	$(PYTHON) analyses/paper1/generate_publication_analysis.py \
+		--experiment-dir experiments/paper1_ollama_pilot
+
+paper1-robustness: ## Generate Paper 1 robustness analysis (ANOVA, convergence, bootstrap)
+	$(PYTHON) analyses/paper1/generate_robustness_analysis.py \
+		--experiment-dir experiments/paper1_ollama_pilot
+
+paper1-confirmatory-prep: install ## Materialize benchmarks and write confirmatory YAML configs
+	$(CALIPER) benchmarks materialize --output-dir data/benchmarks
+	$(CALIPER) benchmarks write-configs --configs-dir configs/paper1 --data-dir data/benchmarks
+
+paper1-confirmatory-analysis: ## Publication analysis for a confirmatory experiment directory
+	$(PYTHON) analyses/paper1/generate_publication_analysis.py \
+		--experiment-dir experiments/paper1_confirmatory_humaneval
+
+paper1-confirmatory-robustness: ## Robustness + GLMM analysis for confirmatory experiment
+	$(PYTHON) analyses/paper1/generate_robustness_analysis.py \
+		--experiment-dir experiments/paper1_confirmatory_humaneval
+
+paper1-preflight: install ## End-to-end pre-flight validation (requires Ollama + benchmarks)
+	$(CALIPER) validate-confirmatory --benchmark humaneval --verbose
 
 clean: ## Remove build artifacts and caches
 	rm -rf $(VENV) dist build *.egg-info .pytest_cache .mypy_cache .ruff_cache htmlcov .coverage

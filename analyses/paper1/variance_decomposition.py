@@ -19,7 +19,13 @@ from caliper.statistics.variance import decompose_variance
 def main() -> None:
     parser = argparse.ArgumentParser(description="Paper 1 variance decomposition")
     parser.add_argument("--results", required=True, type=Path, help="Results parquet/csv/jsonl")
-    parser.add_argument("--metric", default=None, help="Filter to one metric name")
+    parser.add_argument("--metric", default=None, help="Metric name (defaults to config primary_metric)")
+    parser.add_argument(
+        "--config",
+        type=Path,
+        default=None,
+        help="Experiment YAML (defaults to config.yaml beside results)",
+    )
     parser.add_argument("--output-dir", type=Path, default=None, help="Write summary tables here")
     args = parser.parse_args()
 
@@ -31,7 +37,14 @@ def main() -> None:
     else:
         raw = pd.read_csv(args.results)
 
-    df = prepare_results_table(raw, metric_name=args.metric)
+    from caliper.config.metrics import resolve_analysis_metric
+
+    resolved_metric, _ = resolve_analysis_metric(
+        metric=args.metric,
+        results_path=args.results,
+        config_path=args.config,
+    )
+    df = prepare_results_table(raw, metric_name=resolved_metric)
     facets = [c for c in ("model", "task_id", "prompt_id", "run_id", "temperature") if c in df.columns]
 
     print("=== Descriptive Statistics ===")

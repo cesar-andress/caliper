@@ -17,7 +17,13 @@ from caliper.statistics.prepare import prepare_results_table
 def main() -> None:
     parser = argparse.ArgumentParser(description="Paper 1 power simulation")
     parser.add_argument("--results", required=True, type=Path, help="Results parquet/csv/jsonl")
-    parser.add_argument("--metric", default=None, help="Filter to one metric name")
+    parser.add_argument("--metric", default=None, help="Metric name (defaults to config primary_metric)")
+    parser.add_argument(
+        "--config",
+        type=Path,
+        default=None,
+        help="Experiment YAML (defaults to config.yaml beside results)",
+    )
     parser.add_argument("--effect-size", type=float, default=0.05, help="Model mean difference")
     parser.add_argument("--simulations", type=int, default=500, help="Monte Carlo replications")
     parser.add_argument("--output-dir", type=Path, default=None, help="Write power grid CSV here")
@@ -31,7 +37,14 @@ def main() -> None:
     else:
         raw = pd.read_csv(args.results)
 
-    df = prepare_results_table(raw, metric_name=args.metric)
+    from caliper.config.metrics import resolve_analysis_metric
+
+    resolved_metric, _ = resolve_analysis_metric(
+        metric=args.metric,
+        results_path=args.results,
+        config_path=args.config,
+    )
+    df = prepare_results_table(raw, metric_name=resolved_metric)
     gstudy = estimate_g_variance_components(df)
     components = gstudy.components
 

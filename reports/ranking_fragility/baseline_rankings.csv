@@ -1,0 +1,7 @@
+model,mean_score,baseline_rank
+deepseek_coder_v2_lite,0.255,1.0
+qwen25_coder_7b,0.192,2.0
+llama31_8b,0.123,3.0
+qwen25_coder_32b,0.12,4.0
+qwen25_coder_14b,0.113,5.0
+qwen3_32b,0.015,6.0

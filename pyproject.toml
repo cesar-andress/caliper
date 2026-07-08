@@ -59,6 +59,10 @@ local-vllm = [
 local-nvml = [
     "pynvml>=11.5",
 ]
+benchmarks = [
+    "evalplus>=0.2.2",
+    "datasets>=2.18",
+]
 local-all = [
     "torch>=2.1",
     "transformers>=4.40",
