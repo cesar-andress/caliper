@@ -12,7 +12,7 @@ class TestCLI:
     def test_version(self) -> None:
         result = self.runner.invoke(main, ["--version"])
         assert result.exit_code == 0
-        assert "0.1.0" in result.output
+        assert "1.0.0" in result.output
 
     def test_validate_example_config(self) -> None:
         result = self.runner.invoke(

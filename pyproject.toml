@@ -4,17 +4,19 @@ build-backend = "hatchling.build"
 
 [project]
 name = "caliper"
-version = "0.1.0"
+version = "1.0.0"
 description = "Reproducible research artifact for variance, statistical power, and ranking fragility in LLM evaluations"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.11"
 authors = [
-    { name = "CALIPER Team" },
+    { name = "César Andrés", email = "cesar.andress@ucjc.edu" },
+    { name = "David Martín-Moncunill", email = "david.martinm@ucjc.edu" },
+    { name = "José Manuel Baños" },
 ]
-keywords = ["llm", "evaluation", "statistics", "variance", "benchmarks"]
+keywords = ["llm", "evaluation", "statistics", "variance", "benchmarks", "reproducibility"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
@@ -83,6 +85,12 @@ dev = [
 
 [project.scripts]
 caliper = "caliper.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/cesar-andress/caliper"
+Repository = "https://github.com/cesar-andress/caliper"
+Issues = "https://github.com/cesar-andress/caliper/issues"
+Changelog = "https://github.com/cesar-andress/caliper/blob/main/CHANGELOG.md"
 
 [tool.hatch.build.targets.wheel]
 packages = ["caliper"]
