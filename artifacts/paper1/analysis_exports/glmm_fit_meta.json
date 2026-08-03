@@ -1,0 +1,19 @@
+{
+  "generated_at": "2026-08-03T19:03:06.707793+00:00",
+  "n_observations": 39360,
+  "primary_method": "BinomialBayesMixedGLM_VB",
+  "primary_role": "primary",
+  "converged": true,
+  "valid_for_inference": true,
+  "reduced_model_needed": false,
+  "conclusions_changed": null,
+  "reference_categories": {
+    "model_id": "deepseek_coder_v2_lite",
+    "prompt_variant_id": "explicit_reasoning"
+  },
+  "formula": "pass_fail ~ C(model_id) + C(prompt_variant_id) + temperature + (1|task) + (1|run)",
+  "random_effect_variances": {
+    "task": 3.104509763962364,
+    "run": 0.05885189137498193
+  }
+}

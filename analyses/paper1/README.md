@@ -1,59 +1,60 @@
-# Paper 1: Variance Decomposition and Statistical Power
+# Paper 1 analysis scripts
 
-This directory contains analysis scripts for **Paper 1** — variance decomposition
-and statistical power in LLM evaluation.
+Scripts and Make targets for **Paper 1** analyses on factorial evaluation tables.
 
-## Scripts
+For the **frozen HumanEval+ confirmatory dataset** and independent reproduction
+commands, use [`artifacts/paper1/`](../../artifacts/paper1/README.md) first.
+
+## Scripts in this directory
 
 | Script | Purpose |
 |--------|---------|
-| `variance_decomposition.py` | Descriptive stats, variance components, G/D studies |
+| `variance_decomposition.py` | Descriptive variance components from a results table |
 | `power_simulation.py` | Monte Carlo power simulation over design grids |
-| `generate_publication_analysis.py` | Publication tables, figures, LaTeX, and reports from a completed pilot |
+| `generate_publication_analysis.py` | Publication tables/figures from a completed experiment dir |
+| `generate_robustness_analysis.py` | Robustness / GLMM exports |
+| `generate_task_sampling_analysis.py` | Task-subset vs full-suite comparisons |
+| `generate_design_guidance.py` | Design-guidance exports |
 
-## Publication analysis (Paper 1 pilot)
-
-After the 6000-cell pilot completes:
-
-```bash
-make paper1-analysis
-```
-
-Outputs land in `experiments/paper1_ollama_pilot/paper1_analysis/` (`tables/`, `figures/`, `csv/`, `latex/`, `summary/`).
-
-## Usage
+## Preferred reproduction path (frozen data)
 
 ```bash
-# From repository root, after pip install -e .
-python analyses/paper1/variance_decomposition.py \
-  --results outputs/example_factorial/RUN_ID/evaluations.parquet
-
-python analyses/paper1/power_simulation.py \
-  --results outputs/example_factorial/RUN_ID/evaluations.parquet
+python artifacts/paper1/scripts/verify_frozen_dataset.py
+python artifacts/paper1/scripts/reproduce_paper1_core_tables.py
 ```
 
-Or via CLI:
+## CLI (generic tables)
 
 ```bash
-caliper analyze variance --results evaluations.parquet
-caliper analyze power --results evaluations.parquet
+caliper analyze variance --results path/to/evaluations.parquet
+caliper analyze power --results path/to/evaluations.parquet
 ```
 
-## Methods and Limitations
+## Make targets (local experiment directories)
 
-- **Sequential ANOVA** (`decompose_variance`): Type-I factor removal; order-dependent approximation.
-- **MixedLM** (`fit_mixed_model`): Single grouping factor via statsmodels; falls back to ANOVA on failure.
-- **G-theory**: Variance components from ANOVA; G and Φ coefficients for relative/absolute decisions.
-- **Power simulation**: Monte Carlo two-model t-test under crossed task × prompt × run designs.
+When a full local campaign directory exists under gitignored `experiments/`:
 
-Crossed random effects (prompt × task × run) are not fully identified without specialized
-mixed-model software. Treat ANOVA components as approximate; confirm with simulation.
+```bash
+make paper1-humaneval-full-analysis
+make paper1-humaneval-full-robustness
+make paper1-humaneval-full-task-sampling
+```
 
-## Input Schema
+These targets expect `PAPER1_HUMANEVAL_FULL_DIR` (default:
+`experiments/paper1_confirmatory_humaneval_full/paper1_confirmatory_humaneval_full`).
 
-Results tables should include (aliases accepted):
+## Methods notes
 
-- `model`, `task_id`, `prompt_id`, `run_id`, `temperature`
-- `metric_name`, `metric_value`
+- Sequential Type-I shares are descriptive and order-dependent; for the balanced
+  Paper 1 freeze they are invariant under facet reordering (see manuscript).
+- Confirmatory inference for binary pass@1 uses a binomial GLMM (logit); do not
+  treat classical ANOVA-based $G$/$\Phi$ D-study exports as primary evidence.
+- Crossed model-by-task interaction is reported via descriptive partitions in the
+  manuscript reanalysis exports under
+  `artifacts/paper1/analysis_exports/compliant_panel_reanalysis/`.
 
-Use `caliper evaluate` to produce evaluation tables from raw experiment results.
+## Input schema
+
+Tables should include `model`, `task_id`, `prompt_id`, `run_index` (or `run_id`),
+`temperature`, `metric_name`, `metric_value`. The frozen statistical dataset
+already conforms.

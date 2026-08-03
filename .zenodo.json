@@ -2,7 +2,7 @@
   "title": "CALIPER: Comparative Analysis of LLM Inference Perturbation, Evaluation, and Ranking",
   "version": "v1.0.0",
   "upload_type": "software",
-  "description": "First public research release of CALIPER, a reproducible factorial LLM evaluation framework for variance-aware analysis, statistical design guidance, and ranking stability. Accompanying Paper 1 (Empirical Software Engineering manuscript in preparation). Authors: César Andrés (corresponding); David Martín-Moncunill; José Manuel Baños. Archival DOI: https://doi.org/10.5281/zenodo.21780089. Primary entry points: README.md, docs/getting-started.md, docs/author_identity.md. Experiment outputs are not bundled; regenerate from configs under configs/.",
+  "description": "CALIPER v1.0.0 is a reproducible factorial LLM evaluation framework for variance-aware analysis and ranking stability, accompanying Paper 1 (EMSE manuscript). Authors: César Andrés (corresponding; ORCID 0009-0001-8968-3404); David Martín-Moncunill (ORCID 0000-0003-2422-9005); José Manuel Baños (ORCID 0009-0004-9971-7390); CRIA-BDHS, Universidad Camilo José Cela. This archive includes the Paper 1 frozen statistical dataset under artifacts/paper1/ (N=39,360 HumanEval+ cells; SHA-256 95209fff2f742d59b52aa5cf5616f1395ef7fc01fd87fe025c485577bca0d1c9), freeze/integrity/recovery documentation, protocol amendment comparison (40→164 tasks), GLMM/variance exports, and analysis-reproduction scripts. Entry points: README.md, artifacts/paper1/README.md, docs/getting-started.md, docs/author_identity.md. DOI: https://doi.org/10.5281/zenodo.21780089. Development: https://github.com/cesar-andress/caliper.",
   "creators": [
     {
       "name": "Andrés, César",
@@ -27,7 +27,8 @@
     "ranking fragility",
     "reproducible research",
     "empirical software engineering",
-    "HumanEval+"
+    "HumanEval+",
+    "measurement"
   ],
   "license": "mit",
   "access_right": "open",

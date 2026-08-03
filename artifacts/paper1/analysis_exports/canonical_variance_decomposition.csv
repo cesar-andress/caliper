@@ -1,0 +1,16 @@
+family,component,variance,share_pct,note
+descriptive_sequential_ANOVA,model,0.04997332830251116,22.177943507051456,Descriptive Type-I sequential ANOVA shares on pass_at_1 treated as continuous; not a G-study.
+descriptive_sequential_ANOVA,task_id,0.06736603654353701,29.89675099710043,Descriptive Type-I sequential ANOVA shares on pass_at_1 treated as continuous; not a G-study.
+descriptive_sequential_ANOVA,prompt_id,9.77942876052188e-07,0.0004340067510996459,Descriptive Type-I sequential ANOVA shares on pass_at_1 treated as continuous; not a G-study.
+descriptive_sequential_ANOVA,run_id,3.663896874238994e-06,0.0016260213328326907,Descriptive Type-I sequential ANOVA shares on pass_at_1 treated as continuous; not a G-study.
+descriptive_sequential_ANOVA,temperature,3.162983559508774e-08,1.4037182048767633e-05,Descriptive Type-I sequential ANOVA shares on pass_at_1 treated as continuous; not a G-study.
+descriptive_sequential_ANOVA,residual,0.1079849164931028,47.923231430582135,Descriptive Type-I sequential ANOVA shares on pass_at_1 treated as continuous; not a G-study.
+GLMM_BinomialBayesMixedGLM_VB,task,3.104509763962364,,Logit-scale random-effect variances; not comparable to ANOVA shares.
+GLMM_BinomialBayesMixedGLM_VB,run,0.0588518913749819,,Logit-scale random-effect variances; not comparable to ANOVA shares.
+Gtheory_variance_components_export,model,0.04997332830251116,,Exported by estimate_g_variance_components (same sequential ANOVA backend); D-study G/Phi not valid with current formulas.
+Gtheory_variance_components_export,task_id,0.06736603654353701,,Exported by estimate_g_variance_components (same sequential ANOVA backend); D-study G/Phi not valid with current formulas.
+Gtheory_variance_components_export,prompt_id,9.77942876052188e-07,,Exported by estimate_g_variance_components (same sequential ANOVA backend); D-study G/Phi not valid with current formulas.
+Gtheory_variance_components_export,run_id,3.663896874238994e-06,,Exported by estimate_g_variance_components (same sequential ANOVA backend); D-study G/Phi not valid with current formulas.
+Gtheory_variance_components_export,temperature,3.162983559508774e-08,,Exported by estimate_g_variance_components (same sequential ANOVA backend); D-study G/Phi not valid with current formulas.
+Gtheory_variance_components_export,residual,0.1079849164931028,,Exported by estimate_g_variance_components (same sequential ANOVA backend); D-study G/Phi not valid with current formulas.
+Gtheory_variance_components_export,total,0.22532895480873683,,Exported by estimate_g_variance_components (same sequential ANOVA backend); D-study G/Phi not valid with current formulas.

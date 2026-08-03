@@ -1,0 +1,9 @@
+figure,exists_png,exists_pdf,matching_csv,csv_exists,mentions_pass_at_1,mentions_normalized_code_match,mentions_HumanEval,stale_pilot_or_match
+fig01_model_performance,True,True,table2_performance_by_model.csv,True,True,False,True,False
+fig02_prompt_performance,True,True,table3_performance_by_prompt.csv,True,True,False,True,False
+fig03_variance_decomposition,True,True,table5_variance_decomposition.csv,True,True,False,True,False
+fig04_metric_distribution,True,True,,True,True,False,True,False
+fig05_residual_distribution,True,True,,True,True,False,True,False
+fig06_ranking_stability,True,True,ranking_fragility_summary.csv,True,True,False,True,False
+fig07_pairwise_reversals,True,True,pairwise_reversals.csv,True,True,False,True,False
+fig08_power_curves,True,True,power_simulation_grid.csv,True,False,False,False,False

@@ -1,0 +1,130 @@
+{
+  "n_full": 39360,
+  "n_compliant": 32800,
+  "overall_pass_compliant": 0.7468902439024391,
+  "overall_pass_full": 0.6570884146341464,
+  "bernoulli_var_compliant": 0.18904520746579415,
+  "type1_compliant": {
+    "model": 6.125656027771447,
+    "task_id": 42.37424953927673,
+    "prompt_id": 0.0015792910611594942,
+    "run_index": 0.001679594727559414,
+    "temperature": 1.7700647011750248e-05,
+    "residual": 51.496817846516066
+  },
+  "type1_full": {
+    "model": 22.177943507051456,
+    "task_id": 29.89675099710043,
+    "prompt_id": 0.0004340067510996458,
+    "run_index": 0.0016260213328326907,
+    "temperature": 1.4037182048767638e-05,
+    "residual": 47.92323143058213
+  },
+  "interaction_compliant": {
+    "model": 6.125656027771447,
+    "task": 42.37424953927674,
+    "model_x_task": 33.93912519350986,
+    "within_mt_residual": 17.560969239441942
+  },
+  "interaction_full": {
+    "model": 22.177943507051456,
+    "task": 29.89675099710043,
+    "model_x_task": 32.077194039270495,
+    "within_mt_residual": 15.848111456577621
+  },
+  "nt_delta_compliant": [
+    {
+      "delta": 0.05,
+      "pairs": 9,
+      "nt_80": 60,
+      "max_gap": 0.29131097560975616
+    },
+    {
+      "delta": 0.1,
+      "pairs": 6,
+      "nt_80": 20,
+      "max_gap": 0.29131097560975616
+    },
+    {
+      "delta": 0.15,
+      "pairs": 5,
+      "nt_80": 20,
+      "max_gap": 0.29131097560975616
+    },
+    {
+      "delta": 0.2,
+      "pairs": 2,
+      "nt_80": 10,
+      "max_gap": 0.29131097560975616
+    },
+    {
+      "delta": 0.25,
+      "pairs": 2,
+      "nt_80": 10,
+      "max_gap": 0.29131097560975616
+    }
+  ],
+  "nt_delta_full": [
+    {
+      "delta": 0.05,
+      "pairs": 14,
+      "nt_80": 60,
+      "max_gap": 0.6492378048780487
+    },
+    {
+      "delta": 0.1,
+      "pairs": 11,
+      "nt_80": 20,
+      "max_gap": 0.6492378048780487
+    },
+    {
+      "delta": 0.15,
+      "pairs": 10,
+      "nt_80": 20,
+      "max_gap": 0.6492378048780487
+    },
+    {
+      "delta": 0.2,
+      "pairs": 7,
+      "nt_80": 10,
+      "max_gap": 0.6492378048780487
+    },
+    {
+      "delta": 0.25,
+      "pairs": 7,
+      "nt_80": 10,
+      "max_gap": 0.6492378048780487
+    }
+  ],
+  "max_gap_compliant": 0.29131097560975616,
+  "run_agreement_compliant": [
+    {
+      "slice": "overall",
+      "agreement": 0.9382621951219512,
+      "n_cells": 6560
+    },
+    {
+      "slice": "T=0.0",
+      "agreement": 0.9890243902439024,
+      "n_cells": 3280
+    },
+    {
+      "slice": "T=0.2",
+      "agreement": 0.8875,
+      "n_cells": 3280
+    }
+  ],
+  "unresolved_pairs": [
+    {
+      "model_a": "qwen25_coder_14b",
+      "model_b": "qwen25_coder_32b",
+      "diff": 0.008689024390243771
+    },
+    {
+      "model_a": "deepseek_coder_v2_lite",
+      "model_b": "qwen25_coder_7b",
+      "diff": -0.06554878048780466
+    }
+  ],
+  "relaxed_extraction_note": "Post-hoc relaxed extraction recovers 0 additional qwen3 cells; 76.4% predictions are strictly empty under the locked freeze."
+}

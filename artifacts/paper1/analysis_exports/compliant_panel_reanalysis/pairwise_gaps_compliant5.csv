@@ -1,0 +1,11 @@
+a,b,gap
+qwen25_coder_14b,qwen25_coder_32b,0.008689024390243771
+deepseek_coder_v2_lite,qwen25_coder_7b,0.06554878048780466
+qwen25_coder_32b,qwen25_coder_7b,0.08460365853658558
+qwen25_coder_14b,qwen25_coder_7b,0.09329268292682935
+deepseek_coder_v2_lite,llama31_8b,0.13246951219512215
+deepseek_coder_v2_lite,qwen25_coder_32b,0.15015243902439024
+deepseek_coder_v2_lite,qwen25_coder_14b,0.158841463414634
+llama31_8b,qwen25_coder_7b,0.1980182926829268
+llama31_8b,qwen25_coder_32b,0.2826219512195124
+llama31_8b,qwen25_coder_14b,0.29131097560975616

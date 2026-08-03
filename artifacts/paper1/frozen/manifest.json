@@ -1,0 +1,94 @@
+{
+  "run_id": "c1b58081b70e",
+  "experiment_id": "paper1_confirmatory_humaneval_full",
+  "status": "completed",
+  "started_at": "2026-08-03T16:04:06.879821+00:00",
+  "finished_at": "2026-08-03T16:04:09.878414+00:00",
+  "execution_duration_seconds": 2.999,
+  "config_path": "/home/cesar/papers/caliper/caliper/configs/paper1/confirmatory_humaneval_full.yaml",
+  "output_dir": "experiments/paper1_confirmatory_humaneval_full/paper1_confirmatory_humaneval_full",
+  "random_seed": 20260404,
+  "configuration_hash": "fa1415664ebd9262d6149ea2f74beba9c3a2cf1fa93b448ff6506eecc06b14f0",
+  "experiment_hash": "53ee8a1e54346b56f7a3e43c86f0496067442a520a7c1c2565c9f138c65db6db",
+  "total_cells": 39360,
+  "completed_cells": 39360,
+  "failed_cells": 0,
+  "skipped_cells": 0,
+  "software_version": "0.1.0",
+  "git_commit": "4792dc6004e84e4fa69d9781981330015cdcdf18",
+  "python_version": "3.12.13 (main, Mar  4 2026, 09:23:07) [GCC 11.4.0]",
+  "os": {
+    "system": "Linux",
+    "release": "6.8.0-136-generic",
+    "version": "#136~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Fri Jul  3 16:29:11 UTC "
+  },
+  "cpu": {
+    "processor": "x86_64",
+    "physical_cores": "x86_64",
+    "machine": "x86_64",
+    "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.35"
+  },
+  "gpu": {
+    "gpu_available": false,
+    "device": "cuda",
+    "device_index": 0,
+    "gpu_name": null,
+    "gpu_memory_total_gb": null,
+    "gpu_compute_capability": null,
+    "cuda_version": null,
+    "driver_version": null
+  },
+  "libraries": {
+    "python": "3.12.13",
+    "caliper": "0.1.0",
+    "pandas": "3.0.3",
+    "numpy": "2.5.1",
+    "pydantic": "2.13.4",
+    "structlog": "26.1.0",
+    "click": "8.4.2",
+    "pyarrow": "24.0.0",
+    "scipy": "1.18.0",
+    "statsmodels": "0.14.6"
+  },
+  "factorial_axes": {
+    "models": 6,
+    "temperatures": 2,
+    "prompt_variants": 4,
+    "tasks": 164,
+    "runs": 5
+  },
+  "result_paths": {
+    "jsonl": "experiments/paper1_confirmatory_humaneval_full/paper1_confirmatory_humaneval_full/results.jsonl",
+    "parquet": "experiments/paper1_confirmatory_humaneval_full/paper1_confirmatory_humaneval_full/results.parquet",
+    "statistical_dataset": "experiments/paper1_confirmatory_humaneval_full/paper1_confirmatory_humaneval_full/statistical_dataset.parquet"
+  },
+  "evaluation": {
+    "rows_evaluated": 39360,
+    "metrics_per_row": 5,
+    "output_jsonl": "experiments/paper1_confirmatory_humaneval_full/paper1_confirmatory_humaneval_full/evaluations.jsonl",
+    "output_parquet": "experiments/paper1_confirmatory_humaneval_full/paper1_confirmatory_humaneval_full/evaluations.parquet"
+  },
+  "directories": {
+    "logs": "experiments/paper1_confirmatory_humaneval_full/paper1_confirmatory_humaneval_full/logs",
+    "figures": "experiments/paper1_confirmatory_humaneval_full/paper1_confirmatory_humaneval_full/figures",
+    "checkpoints": "experiments/paper1_confirmatory_humaneval_full/paper1_confirmatory_humaneval_full/checkpoints"
+  },
+  "artifact": {
+    "path": "/home/cesar/papers/caliper/caliper/experiments/paper1_confirmatory_humaneval_full/paper1_confirmatory_humaneval_full/artifact",
+    "complete": true,
+    "warnings": [
+      "no experiment figures bundled in data/figures/"
+    ],
+    "errors": [],
+    "missing_files": []
+  },
+  "original_run_id": "c1b58081b70e",
+  "recovery_run_id": "b3fb840135b7",
+  "recovery": {
+    "report_path": "/home/cesar/papers/caliper/caliper/experiments/paper1_confirmatory_humaneval_full/paper1_confirmatory_humaneval_full/missing_cells_report.json",
+    "recovered_cells": 1,
+    "skipped_cells": 0,
+    "still_failed_cells": 0,
+    "audit_path": "/home/cesar/papers/caliper/caliper/experiments/paper1_confirmatory_humaneval_full/paper1_confirmatory_humaneval_full/recovery_audit.jsonl"
+  }
+}

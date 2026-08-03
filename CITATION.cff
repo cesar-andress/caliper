@@ -34,10 +34,10 @@ keywords:
 abstract: >-
   CALIPER is a reproducible research artifact for designing, executing, and
   analyzing factorial LLM evaluation experiments with explicit attention to
-  variance, statistical power, and ranking stability. It supports Paper 1
-  confirmatory HumanEval+ analyses (variance facets, binomial mixed models,
-  task-sampling stability, and design guidance) and Paper 2 ranking-fragility
-  workflows. First public research archive: Zenodo DOI 10.5281/zenodo.21780089.
+  variance and ranking stability. Release v1.0.0 archives the Paper 1 HumanEval+
+  frozen statistical dataset (N=39,360) under artifacts/paper1/, together with
+  freeze/integrity documentation, GLMM/variance exports, and analysis-reproduction
+  scripts. Zenodo DOI 10.5281/zenodo.21780089.
 preferred-citation:
   type: software
   title: "CALIPER: Comparative Analysis of LLM Inference Perturbation, Evaluation, and Ranking"

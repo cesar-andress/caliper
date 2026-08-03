@@ -1,5 +1,9 @@
 # Release audit — CALIPER (pre-v1.0.0)
 
+> **Superseded.** This document records the *pre-release* audit state (version still
+> 0.1.0, missing LICENSE/CITATION, no freeze package). For the post-fix archival
+> audit, see [`docs/zenodo_final_audit.md`](zenodo_final_audit.md).
+
 Date: 2026-08-03  
 Repository: `~/papers/caliper/caliper`  
 Remote: `git@github.com-ucjc:cesar-andress/caliper.git`  

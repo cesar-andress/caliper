@@ -91,6 +91,17 @@ run:
 To run open-weight models on a local GPU (e.g. RTX 4090), see [local-models.md](local-models.md).
 Install optional backends with `pip install -e ".[local]"` and configure `type: local` in YAML.
 
+## Reproducing Paper 1 analyses
+
+The frozen HumanEval+ statistical dataset ships under `artifacts/paper1/`:
+
+```bash
+python artifacts/paper1/scripts/verify_frozen_dataset.py
+python artifacts/paper1/scripts/reproduce_paper1_core_tables.py
+```
+
+Details: [`artifacts/paper1/README.md`](../artifacts/paper1/README.md).
+
 ## Development
 
 ```bash
