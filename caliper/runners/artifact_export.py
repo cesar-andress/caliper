@@ -22,7 +22,7 @@ logger = structlog.get_logger(__name__)
 MIT_LICENSE_TEXT = """\
 MIT License
 
-Copyright (c) 2026 CALIPER Team
+Copyright (c) 2026 César Andrés, David Martín-Moncunill, and José Manuel Baños
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
