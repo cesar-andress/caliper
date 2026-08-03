@@ -40,18 +40,14 @@ Tag pushed: `v1.0.0` (annotated)
 - CLI: `caliper --version` → `1.0.0`; `caliper validate` on example config OK
 - Experiment outputs not committed (`experiments/` gitignored)
 
-## Remaining warnings
+## Remaining warnings (at tagging time)
 
-- Ruff reports style findings on some analysis modules (not blocking release)
 - No GitHub Actions workflow yet (CI optional follow-up)
-- Zenodo DOI not yet minted — update `CITATION.cff` / README after deposit
-- Paper bibliographic DOIs intentionally omitted until acceptance
+- Paper bibliographic DOIs for the manuscript intentionally omitted until acceptance
 
-## Recommended GitHub Release notes
+## Zenodo (published)
 
-Title: `CALIPER v1.0.0`
-
-Body: use `RELEASE_NOTES_v1.0.0.md`.
+**Version DOI:** [https://doi.org/10.5281/zenodo.21780089](https://doi.org/10.5281/zenodo.21780089)
 
 ## Recommended Zenodo title
 
@@ -61,4 +57,4 @@ Creators order and ORCIDs: see `.zenodo.json`.
 
 ## Archival readiness
 
-**Ready for Zenodo archival** of the software artifact at tag `v1.0.0`, provided the operator uploads from this tag (or GitHub–Zenodo webhook) and mints the version DOI afterward.
+**Published.** Software artifact archived at DOI `10.5281/zenodo.21780089` (tag `v1.0.0`).

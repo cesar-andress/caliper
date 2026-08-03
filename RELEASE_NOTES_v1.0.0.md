@@ -33,12 +33,14 @@ Affiliation: CRIA-BDHS Research Group, Higher Polytechnic School of Technology a
 
 ## Citation
 
-See [`CITATION.cff`](CITATION.cff). After Zenodo minting, replace the software DOI placeholder in documentation.
+Cite the Zenodo archive:
+
+**DOI:** [https://doi.org/10.5281/zenodo.21780089](https://doi.org/10.5281/zenodo.21780089)
+
+See [`CITATION.cff`](CITATION.cff). Development repository: https://github.com/cesar-andress/caliper
 
 ## Zenodo
 
-Recommended deposit title:
-
-> CALIPER v1.0.0: Factorial LLM Evaluation Artifact for Variance-Aware Analysis (Paper 1)
-
-Use [`.zenodo.json`](.zenodo.json) as the metadata template.
+**Published release title:** CALIPER v1.0.0  
+**Version DOI:** [10.5281/zenodo.21780089](https://doi.org/10.5281/zenodo.21780089)  
+Creators and ORCIDs: see [`.zenodo.json`](.zenodo.json) and [`docs/author_identity.md`](docs/author_identity.md).

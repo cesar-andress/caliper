@@ -2,7 +2,7 @@
   "title": "CALIPER: Comparative Analysis of LLM Inference Perturbation, Evaluation, and Ranking",
   "version": "v1.0.0",
   "upload_type": "software",
-  "description": "First public research release of CALIPER, a reproducible factorial LLM evaluation framework for variance-aware analysis, statistical design guidance, and ranking stability. Accompanying Paper 1 (Empirical Software Engineering manuscript in preparation). Authors: César Andrés (corresponding); David Martín-Moncunill; José Manuel Baños. Primary entry points: README.md, docs/getting-started.md, docs/author_identity.md. Experiment outputs are not bundled; regenerate from configs under configs/.",
+  "description": "First public research release of CALIPER, a reproducible factorial LLM evaluation framework for variance-aware analysis, statistical design guidance, and ranking stability. Accompanying Paper 1 (Empirical Software Engineering manuscript in preparation). Authors: César Andrés (corresponding); David Martín-Moncunill; José Manuel Baños. Archival DOI: https://doi.org/10.5281/zenodo.21780089. Primary entry points: README.md, docs/getting-started.md, docs/author_identity.md. Experiment outputs are not bundled; regenerate from configs under configs/.",
   "creators": [
     {
       "name": "Andrés, César",
@@ -35,6 +35,12 @@
     {
       "relation": "isSupplementTo",
       "identifier": "https://github.com/cesar-andress/caliper",
+      "resource_type": "software"
+    },
+    {
+      "relation": "isIdenticalTo",
+      "identifier": "10.5281/zenodo.21780089",
+      "scheme": "doi",
       "resource_type": "software"
     }
   ]

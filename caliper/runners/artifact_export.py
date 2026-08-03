@@ -334,19 +334,30 @@ cff-version: 1.2.0
 message: "If you use this artifact, please cite CALIPER and the accompanying papers."
 title: "CALIPER experiment artifact: {experiment_id}"
 version: "{manifest.get('software_version', __version__)}"
+doi: "10.5281/zenodo.21780089"
 date-released: "{datetime.now(tz=UTC).date().isoformat()}"
 authors:
-  - name: "CALIPER Team"
+  - family-names: Andrés
+    given-names: César
+    orcid: "https://orcid.org/0009-0001-8968-3404"
+  - family-names: Martín-Moncunill
+    given-names: David
+    orcid: "https://orcid.org/0000-0003-2422-9005"
+  - family-names: Baños
+    given-names: José Manuel
+    orcid: "https://orcid.org/0009-0004-9971-7390"
 license: MIT
 keywords:
   - large language models
   - evaluation
   - reproducibility
   - factorial design
-repository-code: "https://github.com/PLACEHOLDER/caliper"
+repository-code: "https://github.com/cesar-andress/caliper"
+url: "https://doi.org/10.5281/zenodo.21780089"
 abstract: >
   Reproducibility bundle for CALIPER factorial experiment {experiment_id}.
   Includes frozen results and scripts to regenerate reported tables and figures.
+  Software archive DOI: https://doi.org/10.5281/zenodo.21780089.
 """
 
 

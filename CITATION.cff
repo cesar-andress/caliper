@@ -18,9 +18,10 @@ authors:
     orcid: "https://orcid.org/0009-0004-9971-7390"
     affiliation: "CRIA-BDHS Research Group, Higher Polytechnic School of Technology and Science, Universidad Camilo José Cela, Madrid, Spain"
 version: "1.0.0"
+doi: "10.5281/zenodo.21780089"
 license: MIT
 repository-code: "https://github.com/cesar-andress/caliper"
-url: "https://github.com/cesar-andress/caliper"
+url: "https://doi.org/10.5281/zenodo.21780089"
 date-released: "2026-08-03"
 keywords:
   - llm evaluation
@@ -36,8 +37,7 @@ abstract: >-
   variance, statistical power, and ranking stability. It supports Paper 1
   confirmatory HumanEval+ analyses (variance facets, binomial mixed models,
   task-sampling stability, and design guidance) and Paper 2 ranking-fragility
-  workflows. This v1.0.0 release is the first public research archive intended
-  for Zenodo deposition alongside Paper 1.
+  workflows. First public research archive: Zenodo DOI 10.5281/zenodo.21780089.
 preferred-citation:
   type: software
   title: "CALIPER: Comparative Analysis of LLM Inference Perturbation, Evaluation, and Ranking"
@@ -50,4 +50,6 @@ preferred-citation:
       given-names: José Manuel
   year: 2026
   version: "1.0.0"
-  notes: "Cite this software artifact; update DOI after Zenodo minting."
+  doi: "10.5281/zenodo.21780089"
+  url: "https://doi.org/10.5281/zenodo.21780089"
+  notes: "Archived software release accompanying Paper 1."

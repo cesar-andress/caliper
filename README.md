@@ -1,12 +1,15 @@
 # CALIPER
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21780089.svg)](https://doi.org/10.5281/zenodo.21780089)
+
 **C**omparative **A**nalysis of **L**LM **I**nference **P**erturbation, **E**valuation, and **R**anking
 
 CALIPER is a reproducible research artifact for designing, executing, and analyzing factorial LLM evaluation experiments with explicit attention to **variance**, **statistical power**, and **ranking stability**.
 
 It is intended to support empirical studies that treat benchmark scores as measurements subject to sampling and protocol variation—not as fixed constants. The software is CLI-first, configuration-driven, and modular; it does not prescribe a single benchmark or model suite.
 
-**Status:** Public research release **v1.0.0** (Zenodo archival companion to Paper 1). See [`RELEASE_NOTES_v1.0.0.md`](RELEASE_NOTES_v1.0.0.md) and limitations in [`analyses/paper1/README.md`](analyses/paper1/README.md).
+**Status:** Public research release **v1.0.0**, archived on Zenodo ([DOI: 10.5281/zenodo.21780089](https://doi.org/10.5281/zenodo.21780089)). See [`RELEASE_NOTES_v1.0.0.md`](RELEASE_NOTES_v1.0.0.md) and limitations in [`analyses/paper1/README.md`](analyses/paper1/README.md).
+**Development repository:** [github.com/cesar-andress/caliper](https://github.com/cesar-andress/caliper).
 
 **Authors:** César Andrés (corresponding; [ORCID 0009-0001-8968-3404](https://orcid.org/0009-0001-8968-3404)), David Martín-Moncunill ([ORCID 0000-0003-2422-9005](https://orcid.org/0000-0003-2422-9005)), José Manuel Baños ([ORCID 0009-0004-9971-7390](https://orcid.org/0009-0004-9971-7390)).  
 **Affiliation:** CRIA-BDHS Research Group, Higher Polytechnic School of Technology and Science, Universidad Camilo José Cela, Madrid, Spain.  
@@ -298,7 +301,9 @@ make test-cov   # pytest with coverage
 
 ## Citation
 
-If you use CALIPER, please cite this software artifact (and the companion papers when published). Machine-readable metadata: [`CITATION.cff`](CITATION.cff).
+If you use CALIPER, please cite the archived software release on Zenodo
+([DOI: https://doi.org/10.5281/zenodo.21780089](https://doi.org/10.5281/zenodo.21780089)).
+Machine-readable metadata: [`CITATION.cff`](CITATION.cff). The GitHub repository remains the project development home.
 
 ```bibtex
 @software{andres2026caliper,
@@ -307,12 +312,15 @@ If you use CALIPER, please cite this software artifact (and the companion papers
              Evaluation, and Ranking},
   year    = {2026},
   version = {1.0.0},
-  url     = {https://github.com/cesar-andress/caliper},
-  note    = {First public research release accompanying Paper 1; add Zenodo DOI after minting}
+  publisher = {Zenodo},
+  doi     = {10.5281/zenodo.21780089},
+  url     = {https://doi.org/10.5281/zenodo.21780089},
+  note    = {First public research release accompanying Paper 1;
+             development repository: https://github.com/cesar-andress/caliper}
 }
 ```
 
-Paper bibliographic entries will be updated upon acceptance; do not invent DOIs.
+Paper bibliographic entries will be updated upon acceptance.
 
 ---
 

@@ -103,3 +103,10 @@ make test-cov   # tests with coverage
 ## Project Structure
 
 See [architecture.md](architecture.md) for the full module map and data flow.
+
+## Citation and archival DOI
+
+The CALIPER software artifact is archived on Zenodo
+([DOI: https://doi.org/10.5281/zenodo.21780089](https://doi.org/10.5281/zenodo.21780089)).
+Prefer that DOI for archival citation; GitHub remains the development repository.
+See [`CITATION.cff`](../CITATION.cff) and the README citation block.

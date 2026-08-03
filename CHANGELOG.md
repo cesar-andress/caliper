@@ -15,8 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Missing-cell recovery and experiment path/status helpers for long factorial runs.
 - Binomial mixed-model (GLMM) confirmatory analysis exports for `pass_at_1`.
 - Task-sampling stability analysis and evidence-supported design guidance exports.
-- Release metadata: `LICENSE`, `CITATION.cff`, `.zenodo.json`, `AUTHORS`,
+- Release metadata: `LICENSE`, `CITATION.cff`, `.zenodo.json`, `codemeta.json`, `AUTHORS`,
   `docs/author_identity.md`, `RELEASE_NOTES_v1.0.0.md`.
+- Archival DOI: https://doi.org/10.5281/zenodo.21780089
 
 ### Changed
 
