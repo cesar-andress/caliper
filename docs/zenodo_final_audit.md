@@ -80,7 +80,7 @@ Version strings for the package remain **1.0.0** / tag **v1.0.0**. Historical fr
 
 | Field | Value |
 |-------|-------|
-| Commit | `4af8c6bacc5f8405c4e6ca75275a70cfdef69f8e` (`git rev-parse v1.0.0^{}`) |
+| Commit | `27b606e89371723ae1a037600f1363a2b696ae4f` |
 | Tag | `v1.0.0` (annotated) |
 | Remote | `origin` (`github.com/cesar-andress/caliper`) |
 | GitHub status | `main` + tag `v1.0.0` force-pushed. GitHub Release API 403 here — recreate the Release from the tag in the GitHub UI so Zenodo re-archives. |
