@@ -80,10 +80,10 @@ Version strings for the package remain **1.0.0** / tag **v1.0.0**. Historical fr
 
 | Field | Value |
 |-------|-------|
-| Commit | `c1f18a99e4e88659cc0241f3adab5c0315aef618` |
-| Tag | `v1.0.0` (recreated on that commit) |
+| Commit | `83669287b4e0530cd756b74c4c82bc6adfc54f86` |
+| Tag | `v1.0.0` → `8366928` (`ce0a696` annotated tag object) |
 | Remote | `origin` (`github.com/cesar-andress/caliper`) |
-| GitHub status | force-updated tag + pushed `main` (see below) |
+| GitHub status | `main` and `v1.0.0` pushed (tag force-updated) |
 
 ---
 
