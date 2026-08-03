@@ -99,6 +99,93 @@ def validate(config: Path) -> None:
     click.echo(format_config_summary(experiment_config))
 
 
+@main.command("inspect-missing-cells")
+@click.argument(
+    "experiment_dir",
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+)
+@click.option(
+    "--config", "-c",
+    required=True,
+    type=click.Path(exists=True, path_type=Path),
+    help="Path to the frozen experiment YAML config.",
+)
+@click.option(
+    "--write-retry-config",
+    is_flag=True,
+    help="Write retry_missing_cells.json alongside the diagnostic report.",
+)
+def inspect_missing_cells_cmd(
+    experiment_dir: Path,
+    config: Path,
+    write_retry_config: bool,
+) -> None:
+    """Compare expected factorial cells against checkpoints and results."""
+    from caliper.runners.missing_cells import inspect_missing_cells, write_missing_cells_report
+
+    experiment_config = load_config(config)
+    report = inspect_missing_cells(
+        experiment_dir,
+        experiment_config,
+        config_dir=config.parent.resolve(),
+    )
+    outputs = write_missing_cells_report(
+        experiment_dir,
+        report,
+        write_retry_config=write_retry_config,
+        config_path=config,
+    )
+    counts = report["counts"]
+    click.echo(
+        f"Missing-cell inspection complete for {experiment_config.experiment_id}: "
+        f"{counts['missing_cell_ids']} missing / {counts['expected_cells']} expected"
+    )
+    click.echo(f"  JSON: {outputs['json']}")
+    click.echo(f"  Markdown: {outputs['markdown']}")
+    if "retry_spec" in outputs:
+        click.echo(f"  Retry spec: {outputs['retry_spec']}")
+
+
+@main.command("retry-missing")
+@click.argument(
+    "experiment_dir",
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+)
+@click.option(
+    "--report",
+    required=True,
+    type=click.Path(exists=True, path_type=Path),
+    help="Path to missing_cells_report.json or retry_missing_cells.json.",
+)
+@click.option(
+    "--config", "-c",
+    type=click.Path(exists=True, path_type=Path),
+    help="Optional config override; defaults to report config_path.",
+)
+def retry_missing_cmd(
+    experiment_dir: Path,
+    report: Path,
+    config: Path | None,
+) -> None:
+    """Retry only missing factorial cells without overwriting completed ones."""
+    from caliper.runners.retry_missing import retry_missing_cells
+
+    summary = retry_missing_cells(
+        experiment_dir,
+        report_path=report,
+        config_path=config,
+    )
+    click.echo(
+        f"Recovery run {summary['recovery_run_id']} finished for "
+        f"original run {summary['original_run_id']}: "
+        f"{summary['recovered_cells']} recovered, "
+        f"{summary['still_failed_cells']} still failed, "
+        f"{summary['skipped_cells']} skipped"
+    )
+    click.echo(f"  Remaining missing cells: {summary['remaining_missing_cells']}")
+    click.echo(f"  Audit trail: {summary['audit_path']}")
+
+
 @main.command()
 @click.argument(
     "experiment_dir",
@@ -220,6 +307,18 @@ def export_artifact_cmd(experiment_dir: Path, force: bool) -> None:
 @click.option("--runs", default=1, show_default=True, type=int)
 @click.option("--tasks", default=3, show_default=True, type=int, help="Number of benchmark tasks to exercise.")
 @click.option("--verbose", is_flag=True, help="Print per-stage validation output.")
+@click.option(
+    "--reference-config",
+    type=click.Path(exists=True, path_type=Path),
+    default=None,
+    help="Confirmatory YAML reference (default: 40-task humaneval config).",
+)
+@click.option(
+    "--expected-total-tasks",
+    type=int,
+    default=None,
+    help="Require exact benchmark task count (e.g., 164 for full HumanEval+).",
+)
 def validate_confirmatory_cmd(
     benchmark: str,
     model: str | None,
@@ -228,6 +327,8 @@ def validate_confirmatory_cmd(
     runs: int,
     tasks: int,
     verbose: bool,
+    reference_config: Path | None,
+    expected_total_tasks: int | None,
 ) -> None:
     """Run end-to-end pre-flight validation for a confirmatory experiment."""
     from caliper.validation.config_builder import DEFAULT_MODEL, DEFAULT_PROMPT
@@ -241,6 +342,8 @@ def validate_confirmatory_cmd(
         runs=runs,
         tasks=tasks,
         verbose=verbose,
+        reference_config=reference_config,
+        expected_total_tasks=expected_total_tasks,
     )
 
     click.echo(f"Pre-flight validation output: {report.output_dir}")
@@ -330,6 +433,102 @@ def benchmarks_write_configs(
     click.echo(
         "Confirmatory configs ready. Run `caliper validate -c <config>` before launching."
     )
+
+
+@benchmarks.command("write-humaneval-full-config")
+@click.option(
+    "--reference-config",
+    type=click.Path(exists=True, path_type=Path),
+    default=Path("configs/paper1/confirmatory_humaneval.yaml"),
+    show_default=True,
+)
+@click.option(
+    "--dataset",
+    type=click.Path(exists=True, path_type=Path),
+    default=Path("data/benchmarks/humaneval_plus.jsonl"),
+    show_default=True,
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path),
+    default=Path("configs/paper1/confirmatory_humaneval_full.yaml"),
+    show_default=True,
+)
+def benchmarks_write_humaneval_full_config(
+    reference_config: Path,
+    dataset: Path,
+    output: Path,
+) -> None:
+    """Generate the 164-task HumanEval+ confirmatory extension config."""
+    from caliper.benchmarks.experiment_yaml import expected_cell_count, write_humaneval_full_config
+    from caliper.validation.protocol_comparison import assert_protocol_equivalent_except_tasks
+
+    path = write_humaneval_full_config(
+        reference_path=reference_config,
+        dataset_path=dataset,
+        output_path=output,
+    )
+    result = assert_protocol_equivalent_except_tasks(
+        subset_path=reference_config,
+        full_path=path,
+    )
+    click.echo(f"Wrote {path} ({result.full_task_count} tasks, {result.expected_full_cells} cells)")
+    click.echo("Protocol comparison: PASS")
+
+
+@main.command("compare-protocol")
+@click.option(
+    "--subset-config",
+    type=click.Path(exists=True, path_type=Path),
+    default=Path("configs/paper1/confirmatory_humaneval.yaml"),
+    show_default=True,
+)
+@click.option(
+    "--full-config",
+    type=click.Path(exists=True, path_type=Path),
+    default=Path("configs/paper1/confirmatory_humaneval_full.yaml"),
+    show_default=True,
+)
+@click.option(
+    "--report",
+    type=click.Path(path_type=Path),
+    default=Path("docs/paper1_humaneval_full_protocol_comparison.md"),
+    show_default=True,
+)
+def compare_protocol_cmd(subset_config: Path, full_config: Path, report: Path) -> None:
+    """Compare 40-task and 164-task confirmatory protocols; fail on unintended diffs."""
+    from caliper.validation.protocol_comparison import write_protocol_comparison_report
+
+    result = write_protocol_comparison_report(
+        report,
+        subset_path=subset_config,
+        full_path=full_config,
+    )
+    click.echo(f"Protocol comparison report: {report}")
+    click.echo(f"Result: {'PASS' if result.passed else 'FAIL'}")
+    if not result.passed:
+        for diff in result.differences:
+            click.echo(f"  - {diff}")
+        raise SystemExit(1)
+
+
+@main.command("experiment-status")
+@click.argument(
+    "experiment_dir",
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+)
+@click.option(
+    "--config", "-c",
+    type=click.Path(exists=True, path_type=Path),
+    default=None,
+    help="Experiment YAML config for expected cell count.",
+)
+def experiment_status_cmd(experiment_dir: Path, config: Path | None) -> None:
+    """Report progress, throughput, and ETA for a factorial experiment."""
+    from caliper.runners.experiment_status import collect_experiment_status, format_experiment_status
+
+    status = collect_experiment_status(experiment_dir, config_path=config)
+    click.echo(format_experiment_status(status))
 
 
 @main.group()
@@ -573,16 +772,68 @@ def analyze_robustness(
     fast: bool,
 ) -> None:
     """Run robust ANOVA, convergence, sensitivity, and bootstrap analyses (Paper 1)."""
+    from caliper.runners.experiment_paths import resolve_experiment_dir
     from caliper.statistics.robustness_report import run_robustness_analysis
 
+    resolved_dir = resolve_experiment_dir(experiment_dir)
     iterations = 500 if fast else n_bootstrap
     out = run_robustness_analysis(
-        experiment_dir,
+        resolved_dir,
         metric=metric,
         n_bootstrap=iterations,
     )
+    click.echo(f"Resolved experiment directory: {resolved_dir}")
     click.echo(f"Robustness analysis complete: {out}")
     click.echo(f"  Summary: {out / 'summary' / 'robustness_section.md'}")
+
+
+@analyze.command("task-sampling")
+@click.option(
+    "--full-experiment",
+    required=True,
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+)
+@click.option(
+    "--subset-experiment",
+    required=True,
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+)
+@click.option("--metric", default="pass_at_1", show_default=True)
+@click.option("--n-subsets", default=1000, show_default=True, type=int)
+@click.option("--seed", default=20260404, show_default=True, type=int)
+def analyze_task_sampling_cmd(
+    full_experiment: Path,
+    subset_experiment: Path,
+    metric: str,
+    n_subsets: int,
+    seed: int,
+) -> None:
+    """Compare 40-task subset stability against the full HumanEval+ benchmark."""
+    from caliper.statistics.task_sampling import run_task_sampling_analysis
+
+    paths = run_task_sampling_analysis(
+        full_experiment,
+        subset_experiment,
+        metric=metric,
+        n_subsets=n_subsets,
+        seed=seed,
+    )
+    click.echo(f"Task-sampling analysis written to {paths.root}")
+
+
+@analyze.command("design-guidance")
+@click.option(
+    "--experiment-dir",
+    required=True,
+    type=click.Path(file_okay=False, path_type=Path),
+)
+@click.option("--metric", default="pass_at_1", show_default=True)
+def analyze_design_guidance_cmd(experiment_dir: Path, metric: str) -> None:
+    """Export actionable D-study design guidance (placeholders until completion)."""
+    from caliper.statistics.design_guidance import export_design_guidance
+
+    paths = export_design_guidance(experiment_dir, metric=metric)
+    click.echo(f"Design guidance written to {paths.root}")
 
 
 @analyze.command("fragility")

@@ -14,28 +14,32 @@ import pandas as pd
 
 from caliper.config.loader import load_config
 from caliper.config.metrics import resolve_primary_metric
+from caliper.runners.experiment_paths import resolve_experiment_dir
 from caliper.statistics.convergence import DEFAULT_SUBSET_SIZES, analyze_convergence
-from caliper.statistics.prepare import prepare_results_table
+from caliper.statistics.prepare import load_analysis_frame
 from caliper.statistics.robust_analysis import (
     bootstrap_ranking_robustness,
     compare_methods,
     factor_effect_sizes,
     leave_one_out_sensitivity,
 )
-from caliper.statistics.glmm_analysis import fit_pass_fail_glmm, glmm_coefficients_table
+from caliper.statistics.glmm_analysis import (
+    GLMMAnalysisResult,
+    glmm_coefficients_table,
+    render_glmm_interpretation,
+    run_pass_fail_glmm_analysis,
+)
 
 DPI = 300
 RANDOM_SEED = 20260404
 
 
 def _prepare_frame(experiment_dir: Path, metric: str) -> pd.DataFrame:
-    stats_path = experiment_dir / "statistical_dataset.parquet"
-    raw = pd.read_parquet(stats_path if stats_path.exists() else experiment_dir / "results.parquet")
-    df = prepare_results_table(raw, metric_name=metric)
-    if "run_index" in df.columns and df.get("run_id", pd.Series()).nunique(dropna=False) <= 1:
-        df = df.copy()
-        df["run_id"] = df["run_index"]
-    return df
+    return load_analysis_frame(
+        experiment_dir,
+        metric_name=metric,
+        require_statistical_dataset=True,
+    )
 
 
 def _save_figure(fig: plt.Figure, stem: str, out_dir: Path) -> None:
@@ -170,14 +174,14 @@ def _write_robustness_section(
         "## Statistical methods compared",
         "",
         "We report sequential Type I ANOVA (primary pipeline), Type II ANOVA, Type III ANOVA, "
-        "and a linear mixed-effects model (MixedLM) with random intercepts for task and run "
-        "when estimable. All analyses reuse the existing 6000-cell pilot; no experiment was rerun.",
+        "and a linear probability mixed model (Gaussian MixedLM; sensitivity analysis only) "
+        "when estimable. Binomial GLMM is the primary inferential model for pass/fail outcomes.",
         "",
         "### Method agreement",
         "",
         f"- Type II ANOVA: largest partial η² for **{anova2_top['term']}** ({anova2_top['partial_eta_squared']:.4f}).",
         f"- Type III ANOVA: largest partial η² for **{anova3_top['term']}** ({anova3_top['partial_eta_squared']:.4f}).",
-        f"- MixedLM converged with {len(robust.mixed_effects)} reported terms.",
+        f"- MixedLM sensitivity analysis: {len(robust.mixed_effects)} terms exported when valid.",
         "",
         "Qualitative conclusions about prompt-dominated variance are **consistent** across Type II "
         "and Type III decompositions in this dataset. Exact p-values differ by method; we do not "
@@ -203,7 +207,7 @@ def _write_robustness_section(
         "## Assumptions and limitations",
         "",
         "- ANOVA on zero-inflated binary-like scores is an approximation; normality is not satisfied.",
-        "- MixedLM supports limited crossed random effects; vc_formula may fail on sparse designs.",
+        "- MixedLM on binary outcomes is a linear probability sensitivity check only.",
         "- Bootstrap resamples facet levels without re-running model inference.",
         "- Leave-one-out sensitivity is descriptive, not a formal influence diagnostic.",
         "",
@@ -218,13 +222,52 @@ def _write_robustness_section(
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
+def _export_glmm_outputs(result: GLMMAnalysisResult, dirs: dict[str, Path]) -> None:
+    diagnostics = result.diagnostics.copy()
+    coefficients = glmm_coefficients_table(result)
+    if not coefficients.empty:
+        pub_coef = result.coefficients.copy()
+    else:
+        pub_coef = pd.DataFrame()
+
+    random_effects = result.random_effects.copy()
+    model_comparison = result.model_comparison.copy()
+
+    diagnostics.to_csv(dirs["csv"] / "glmm_diagnostics.csv", index=False)
+    pub_coef.to_csv(dirs["csv"] / "glmm_coefficients.csv", index=False)
+    random_effects.to_csv(dirs["csv"] / "glmm_random_effects.csv", index=False)
+    model_comparison.to_csv(dirs["csv"] / "model_comparison.csv", index=False)
+
+    if not pub_coef.empty:
+        _export(
+            pub_coef,
+            "table_glmm_coefficients",
+            dirs,
+            "Primary binomial GLMM fixed effects (odds ratios).",
+            "tab:glmm-coefficients",
+        )
+    if not diagnostics.empty:
+        _export(
+            diagnostics,
+            "table_glmm_diagnostics",
+            dirs,
+            "GLMM fit diagnostics.",
+            "tab:glmm-diagnostics",
+        )
+
+    (dirs["summary"] / "glmm_interpretation.md").write_text(
+        render_glmm_interpretation(result),
+        encoding="utf-8",
+    )
+
+
 def run_robustness_analysis(
     experiment_dir: Path,
     *,
     metric: str | None = None,
     n_bootstrap: int = 5000,
 ) -> Path:
-    experiment_dir = experiment_dir.resolve()
+    experiment_dir = resolve_experiment_dir(experiment_dir)
     out_root = experiment_dir / "paper1_analysis" / "robustness"
     dirs = {
         "root": out_root,
@@ -257,7 +300,7 @@ def run_robustness_analysis(
     _export(effects, "table_factor_effect_sizes", dirs, "Factor effect sizes.", "tab:effect-sizes")
     _export(robust.anova_type2, "table_anova_type2", dirs, "Type II ANOVA effects.", "tab:anova2")
     _export(robust.anova_type3, "table_anova_type3", dirs, "Type III ANOVA effects.", "tab:anova3")
-    _export(robust.mixed_effects, "table_mixed_effects", dirs, "Mixed-effects estimates.", "tab:mixed")
+    _export(robust.mixed_effects, "table_mixed_effects", dirs, "Linear probability mixed model (sensitivity only).", "tab:mixed")
     _export(convergence, "table_convergence", dirs, "Convergence by sample size.", "tab:convergence")
     _export(sensitivity, "table_sensitivity", dirs, "Leave-one-out sensitivity.", "tab:sensitivity")
     _export(bootstrap_summary, "table_bootstrap_summary", dirs, "Bootstrap CI summary.", "tab:bootstrap-summary")
@@ -265,36 +308,11 @@ def run_robustness_analysis(
 
     bootstrap_samples.to_parquet(dirs["csv"] / "bootstrap_samples_5000.parquet", index=False)
 
-    glmm_result = None
+    glmm_result: GLMMAnalysisResult | None = None
     if metric in {"pass_at_1", "pass_at_k", "test_pass"}:
         try:
-            glmm_result = fit_pass_fail_glmm(df, metric=metric)
-            glmm_table = glmm_coefficients_table(glmm_result)
-            _export(
-                glmm_table,
-                "table_glmm_pass_fail",
-                dirs,
-                "Primary GLMM for pass/fail outcome.",
-                "tab:glmm-pass-fail",
-            )
-            glmm_summary = pd.DataFrame(
-                [
-                    {
-                        "method": glmm_result.method,
-                        "formula": glmm_result.formula,
-                        "converged": glmm_result.converged,
-                        "n_observations": glmm_result.n_observations,
-                        "notes": "; ".join(glmm_result.notes),
-                    }
-                ]
-            )
-            _export(
-                glmm_summary,
-                "table_glmm_summary",
-                dirs,
-                "GLMM fit summary.",
-                "tab:glmm-summary",
-            )
+            glmm_result = run_pass_fail_glmm_analysis(df, metric=metric)
+            _export_glmm_outputs(glmm_result, dirs)
         except Exception as exc:  # noqa: BLE001
             (dirs["summary"] / "glmm_error.txt").write_text(str(exc), encoding="utf-8")
 
@@ -320,7 +338,11 @@ def run_robustness_analysis(
         "n_bootstrap": n_bootstrap,
         "subset_sizes": list(DEFAULT_SUBSET_SIZES),
         "notes": robust.notes,
-        "glmm_method": glmm_result.method if glmm_result is not None else None,
+        "glmm_method": glmm_result.primary_method if glmm_result is not None else None,
+        "glmm_converged": glmm_result.primary.converged if glmm_result is not None else None,
+        "glmm_valid_for_inference": glmm_result.primary.valid_for_inference if glmm_result else None,
+        "glmm_reduced_model_needed": glmm_result.reduced_model_needed if glmm_result else None,
+        "glmm_conclusions_changed": glmm_result.conclusions_changed if glmm_result else None,
     }
     (dirs["root"] / "robustness_manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     return out_root

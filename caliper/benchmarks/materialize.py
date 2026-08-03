@@ -69,6 +69,14 @@ def materialize_all(
     return paths
 
 
+def list_all_task_ids(dataset_path: Path | str) -> list[str]:
+    """Return all unique task IDs from a JSONL dataset in sorted order."""
+    from caliper.tasks.loader import TaskDataset
+
+    dataset = TaskDataset.from_jsonl(dataset_path)
+    return sorted(dataset.ids())
+
+
 def select_task_subset(
     dataset_path: Path | str,
     *,

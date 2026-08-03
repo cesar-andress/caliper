@@ -49,5 +49,6 @@ def test_glmm_fit_on_synthetic_pass_fail_data():
                     )
     df = pd.DataFrame(rows)
     result = fit_pass_fail_glmm(df, metric="pass_at_1")
-    assert result.n_observations == len(rows)
+    assert result.primary.n_observations == len(rows)
     assert not result.coefficients.empty
+    assert result.primary.valid_for_inference or result.primary.method.startswith("Binomial")

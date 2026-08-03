@@ -95,7 +95,12 @@ def _disk_free_gb(path: Path) -> float:
     return usage.free / (1024**3)
 
 
-def validate_benchmark_load(benchmark: str, *, num_tasks: int) -> tuple[StageResult, dict[str, Any]]:
+def validate_benchmark_load(
+    benchmark: str,
+    *,
+    num_tasks: int,
+    expected_total_tasks: int | None = None,
+) -> tuple[StageResult, dict[str, Any]]:
     start = time.perf_counter()
     info: dict[str, Any] = {"name": resolve_benchmark(benchmark)}
     try:
@@ -117,6 +122,21 @@ def validate_benchmark_load(benchmark: str, *, num_tasks: int) -> tuple[StageRes
             )
 
         dataset = TaskDataset.from_jsonl(path)
+        if expected_total_tasks is not None and len(dataset) != expected_total_tasks:
+            return (
+                _stage(
+                    ValidationStage.BENCHMARK_LOAD,
+                    "FAIL",
+                    latency_ms=(time.perf_counter() - start) * 1000,
+                    message=(
+                        f"Dataset has {len(dataset)} tasks, expected exactly {expected_total_tasks}"
+                    ),
+                    root_cause="Benchmark task count mismatch",
+                    recommended_fix="Re-materialize HumanEval+ dataset",
+                    severity="critical",
+                ),
+                info,
+            )
         if len(dataset) < num_tasks:
             return (
                 _stage(
@@ -939,6 +959,8 @@ def run_confirmatory_validation(
     tasks: int = 3,
     verbose: bool = False,
     skip_experiment: bool = False,
+    reference_config: Path | str | None = None,
+    expected_total_tasks: int | None = None,
 ) -> ValidationReport:
     """Execute full pre-flight validation and return structured report."""
     pipeline_start = time.perf_counter()
@@ -946,7 +968,7 @@ def run_confirmatory_validation(
     warnings: list[str] = []
     resolved = resolve_benchmark(benchmark)
 
-    ref_path = reference_config_path(benchmark)
+    ref_path = Path(reference_config) if reference_config else reference_config_path(benchmark)
     ref_errors = validate_config(ref_path)
     if ref_errors:
         stages.append(
@@ -977,7 +999,11 @@ def run_confirmatory_validation(
         write_reports(report, output_stub)
         return report
 
-    bench_stage, bench_info = validate_benchmark_load(benchmark, num_tasks=tasks)
+    bench_stage, bench_info = validate_benchmark_load(
+        benchmark,
+        num_tasks=tasks,
+        expected_total_tasks=expected_total_tasks,
+    )
     stages.append(bench_stage)
     if bench_stage.failed:
         env = collect_environment()
@@ -1002,6 +1028,7 @@ def run_confirmatory_validation(
         temperature=temperature,
         number_of_runs=runs,
         num_tasks=tasks,
+        reference_config=ref_path,
     )
 
     bench_info.update(

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
@@ -9,6 +10,8 @@ import numpy as np
 import pandas as pd
 
 AnovaType = Literal[2, 3]
+
+SENSITIVITY_LPM_METHOD = "Linear probability mixed model — sensitivity analysis only"
 
 FIXED_FACTORS = ("model", "prompt_id", "temperature")
 RANDOM_FACTORS = ("task_id", "run_id")
@@ -190,7 +193,11 @@ def fit_robust_mixed_model(
                     re_formula="1",
                 )
                 notes.append("MixedLM: random intercept for task only (single run level).")
-            fit = model.fit(reml=True, method="lbfgs", maxiter=300, disp=False)
+            with warnings.catch_warnings(record=True) as records:
+                warnings.simplefilter("always")
+                fit = model.fit(reml=True, method="lbfgs", maxiter=300, disp=False)
+            for record in records:
+                notes.append(f"{record.category.__name__}: {record.message}")
         except Exception as exc:
             notes.append(f"MixedLM with task+run failed ({exc}); trying task-only grouping.")
             fit = None
@@ -203,7 +210,11 @@ def fit_robust_mixed_model(
                 groups=work["run_id"],
                 re_formula="1",
             )
-            fit = model.fit(reml=True, method="lbfgs", maxiter=300, disp=False)
+            with warnings.catch_warnings(record=True) as records:
+                warnings.simplefilter("always")
+                fit = model.fit(reml=True, method="lbfgs", maxiter=300, disp=False)
+            for record in records:
+                notes.append(f"{record.category.__name__}: {record.message}")
             method = "statsmodels_mixedlm_run_group"
             notes.append("MixedLM fallback: random intercept for run only.")
         except Exception as exc:
@@ -274,7 +285,27 @@ def fit_robust_mixed_model(
         )
 
     notes.append(f"MixedLM converged={bool(getattr(fit, 'converged', False))}.")
-    return pd.DataFrame(rows), notes
+    if not rows:
+        return pd.DataFrame(
+            columns=[
+                "term",
+                "method",
+                "estimate",
+                "std_err",
+                "ci_lower",
+                "ci_upper",
+                "p_value",
+                "partial_eta_squared",
+                "omega_squared",
+            ]
+        ), notes
+
+    out = pd.DataFrame(rows)
+    out["method"] = SENSITIVITY_LPM_METHOD
+    out["include_in_publication"] = bool(getattr(fit, "converged", False)) and not any(
+        "singular" in note.lower() for note in notes
+    )
+    return out, notes
 
 
 def compare_methods(df: pd.DataFrame) -> RobustAnalysisResult:
@@ -345,7 +376,12 @@ def leave_one_out_sensitivity(
     for col, label in drop_specs:
         if col not in df.columns:
             continue
-        for level in sorted(df[col].unique()):
+        levels = sorted(df[col].unique())
+        # Full leave-one-task-out is O(n_tasks) variance refits; subsample for large benchmarks.
+        if col == "task_id" and len(levels) > 40:
+            rng = np.random.default_rng(20260404)
+            levels = sorted(rng.choice(levels, size=40, replace=False).tolist())
+        for level in levels:
             subset = df[df[col] != level]
             if subset.empty or subset[col].nunique() < 1:
                 continue

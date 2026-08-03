@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+import copy
 from pathlib import Path
 from typing import Any
 
 import yaml
 
-from caliper.benchmarks.materialize import select_task_subset
+from caliper.benchmarks.materialize import list_all_task_ids, select_task_subset
 from caliper.benchmarks.prompts import controlled_prompt_templates
 
 DEFAULT_MODELS: list[dict[str, str]] = [
@@ -165,6 +166,83 @@ def write_confirmatory_configs(
         output_path=paths["mbpp"],
     )
     return paths
+
+
+def build_full_humaneval_config_from_reference(
+    *,
+    reference_path: Path | str,
+    dataset_path: Path | str,
+    experiment_id: str = "paper1_confirmatory_humaneval_full",
+    output_directory: str | None = None,
+) -> dict[str, Any]:
+    """Expand a frozen 40-task HumanEval+ config to all benchmark tasks."""
+    reference_path = Path(reference_path)
+    dataset_path = Path(dataset_path)
+    reference = yaml.safe_load(reference_path.read_text(encoding="utf-8"))
+    if not reference.get("tasks"):
+        msg = f"Reference config has no tasks: {reference_path}"
+        raise ValueError(msg)
+
+    task_ids = list_all_task_ids(dataset_path)
+    template = copy.deepcopy(reference["tasks"][0])
+    tasks = []
+    for index, benchmark_task_id in enumerate(task_ids, start=1):
+        task = copy.deepcopy(template)
+        task["id"] = f"task-humaneval_plus-{index:03d}"
+        extra = dict(task.get("extra") or {})
+        extra["filter_task_id"] = benchmark_task_id
+        task["extra"] = extra
+        tasks.append(task)
+
+    config = copy.deepcopy(reference)
+    config["experiment_id"] = experiment_id
+    config["description"] = (
+        "Paper 1 confirmatory extension on the complete HumanEval+ benchmark (164 tasks) "
+        "using the locked 40-task protocol without modification."
+    )
+    config["tasks"] = tasks
+    config["output"] = {
+        **(reference.get("output") or {}),
+        "directory": output_directory or f"experiments/{experiment_id}",
+    }
+    metadata = dict(reference.get("study_metadata") or {})
+    metadata.update(
+        {
+            "extension_of": "paper1_confirmatory_humaneval",
+            "reference_config": str(reference_path.as_posix()),
+            "task_selection": "full_benchmark",
+            "task_count": len(task_ids),
+        }
+    )
+    config["study_metadata"] = metadata
+    return config
+
+
+def write_humaneval_full_config(
+    *,
+    reference_path: Path | str = Path("configs/paper1/confirmatory_humaneval.yaml"),
+    dataset_path: Path | str = Path("data/benchmarks/humaneval_plus.jsonl"),
+    output_path: Path | str = Path("configs/paper1/confirmatory_humaneval_full.yaml"),
+) -> Path:
+    """Write the 164-task HumanEval+ confirmatory YAML config."""
+    output_path = Path(output_path)
+    config = build_full_humaneval_config_from_reference(
+        reference_path=reference_path,
+        dataset_path=dataset_path,
+    )
+    task_count = len(config["tasks"])
+    header = (
+        f"# Paper 1 confirmatory extension — humaneval_plus (full benchmark)\n"
+        f"# {task_count} tasks × {len(DEFAULT_MODELS)} models × "
+        f"{len(controlled_prompt_templates())} prompts × {len(DEFAULT_TEMPERATURES)} temperatures × "
+        f"{DEFAULT_RUNS} runs = {expected_cell_count(task_count)} cells\n"
+    )
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(
+        header + yaml.safe_dump(config, sort_keys=False, allow_unicode=True),
+        encoding="utf-8",
+    )
+    return output_path
 
 
 def expected_cell_count(task_count: int) -> int:

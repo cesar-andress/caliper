@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pandas as pd
 
 STANDARD_COLUMNS = (
@@ -103,3 +105,65 @@ def prepare_results_table(
 
     out["metric_value"] = out["metric_value"].astype(float)
     return out.reset_index(drop=True)
+
+
+def completed_rows_only(df: pd.DataFrame) -> pd.DataFrame:
+    """Keep terminal completed rows; drop append-only historical failures.
+
+    When ``cell_id`` is present and duplicates exist, retain the **last** completed
+    row per cell (append-only recovery / retry history).
+    """
+    if df.empty:
+        return df.copy()
+    out = df
+    if "status" in out.columns:
+        out = out[out["status"] == "completed"].copy()
+    if "cell_id" in out.columns and out["cell_id"].duplicated().any():
+        out = out.drop_duplicates(subset=["cell_id"], keep="last").copy()
+    return out.reset_index(drop=True)
+
+
+def load_analysis_frame(
+    experiment_dir: Path | str,
+    *,
+    metric_name: str | None = None,
+    require_statistical_dataset: bool = True,
+) -> pd.DataFrame:
+    """Load the Paper 1 analysis frame from the frozen statistical dataset.
+
+    Prefers ``statistical_dataset.parquet`` (completed-only, analysis schema).
+    Falls back to ``results.parquet`` only when ``require_statistical_dataset`` is
+    False, and then filters to completed rows with latest-per-``cell_id`` semantics
+    so historical ``failed`` append-only rows cannot enter confirmatory analyses.
+    """
+    experiment_dir = Path(experiment_dir)
+    stats_path = experiment_dir / "statistical_dataset.parquet"
+    results_path = experiment_dir / "results.parquet"
+
+    if stats_path.exists():
+        raw = pd.read_parquet(stats_path)
+        source = "statistical_dataset.parquet"
+    elif require_statistical_dataset:
+        msg = (
+            f"Frozen analysis requires {stats_path}; refusing to read append-only "
+            "results.jsonl/results.parquet for confirmatory statistics."
+        )
+        raise FileNotFoundError(msg)
+    elif results_path.exists():
+        raw = completed_rows_only(pd.read_parquet(results_path))
+        source = "results.parquet(completed_latest)"
+    else:
+        msg = f"No statistical_dataset.parquet or results.parquet under {experiment_dir}"
+        raise FileNotFoundError(msg)
+
+    if source.startswith("statistical_dataset") and "status" in raw.columns:
+        raw = completed_rows_only(raw)
+
+    frame = prepare_results_table(raw, metric_name=metric_name)
+    if "run_index" in frame.columns and frame.get("run_id", pd.Series(dtype=object)).nunique(
+        dropna=False
+    ) <= 1:
+        frame = frame.copy()
+        frame["run_id"] = frame["run_index"]
+    frame.attrs["analysis_source"] = source
+    return frame

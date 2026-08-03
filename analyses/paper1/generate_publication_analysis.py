@@ -18,11 +18,12 @@ from scipy import stats
 from caliper.config.loader import load_config
 from caliper.config.metrics import resolve_primary_metric
 from caliper.ranking.analysis import run_ranking_fragility_analysis
+from caliper.runners.experiment_paths import resolve_experiment_dir
 from caliper.statistics.bootstrap import bootstrap_ci, bootstrap_ci_by_factor
 from caliper.statistics.descriptive import descriptive_by_factor
 from caliper.statistics.gtheory import estimate_g_variance_components
 from caliper.statistics.power_sim import simulate_power_grid
-from caliper.statistics.prepare import prepare_results_table
+from caliper.statistics.prepare import load_analysis_frame
 from caliper.statistics.variance import decompose_variance
 
 PRIMARY_METRIC_DEFAULT = "normalized_code_match"
@@ -73,15 +74,12 @@ def _load_manifest(experiment_dir: Path) -> dict[str, Any]:
 
 
 def _prepare_analysis_frame(experiment_dir: Path, metric: str) -> pd.DataFrame:
-    stats_path = experiment_dir / "statistical_dataset.parquet"
-    results_path = experiment_dir / "results.parquet"
-    source = stats_path if stats_path.exists() else results_path
-    raw = pd.read_parquet(source)
-    df = prepare_results_table(raw, metric_name=metric)
-    if "run_index" in df.columns and df.get("run_id", pd.Series()).nunique(dropna=False) <= 1:
-        df = df.copy()
-        df["run_id"] = df["run_index"]
-    return df
+    # Confirmatory / frozen studies must use statistical_dataset.parquet only.
+    return load_analysis_frame(
+        experiment_dir,
+        metric_name=metric,
+        require_statistical_dataset=True,
+    )
 
 
 def _performance_table(df: pd.DataFrame, factor_col: str) -> pd.DataFrame:
@@ -249,26 +247,28 @@ def _save_figure(fig: plt.Figure, stem: str, paths: AnalysisPaths) -> None:
     plt.close(fig)
 
 
-def _fig_model_performance(table: pd.DataFrame, paths: AnalysisPaths) -> None:
+def _fig_model_performance(table: pd.DataFrame, paths: AnalysisPaths, metric: str) -> None:
     fig, ax = plt.subplots(figsize=(8, 5))
     x = np.arange(len(table))
     ax.bar(x, table["mean"], yerr=[table["mean"] - table["ci_95_lower"], table["ci_95_upper"] - table["mean"]], capsize=4, color="#4C72B0")
     ax.set_xticks(x)
     ax.set_xticklabels(table["model"], rotation=35, ha="right")
-    ax.set_ylabel("normalized_code_match")
-    ax.set_title("Mean Performance by Model (95% CI)")
+    ax.set_ylabel(metric)
+    ax.set_title(
+        f"Mean {metric} by Model — HumanEval+ (95% bootstrap CI; N={int(table['count'].sum())} cells)"
+    )
     ax.set_ylim(0, max(0.05, table["ci_95_upper"].max() * 1.15))
     _save_figure(fig, "fig01_model_performance", paths)
 
 
-def _fig_prompt_performance(table: pd.DataFrame, paths: AnalysisPaths) -> None:
+def _fig_prompt_performance(table: pd.DataFrame, paths: AnalysisPaths, metric: str) -> None:
     fig, ax = plt.subplots(figsize=(8, 5))
     x = np.arange(len(table))
     ax.bar(x, table["mean"], yerr=[table["mean"] - table["ci_95_lower"], table["ci_95_upper"] - table["mean"]], capsize=4, color="#55A868")
     ax.set_xticks(x)
     ax.set_xticklabels(table["prompt_id"], rotation=25, ha="right")
-    ax.set_ylabel("normalized_code_match")
-    ax.set_title("Mean Performance by Prompt (95% CI)")
+    ax.set_ylabel(metric)
+    ax.set_title(f"Mean {metric} by Prompt — HumanEval+ (95% bootstrap CI)")
     ax.set_ylim(0, max(0.05, table["ci_95_upper"].max() * 1.15))
     _save_figure(fig, "fig02_prompt_performance", paths)
 
@@ -278,16 +278,16 @@ def _fig_variance_decomposition(table: pd.DataFrame, paths: AnalysisPaths) -> No
     ordered = table.sort_values("pct_total_variance", ascending=True)
     ax.barh(ordered["component"], ordered["pct_total_variance"], color="#C44E52")
     ax.set_xlabel("Percentage of total variance")
-    ax.set_title("Variance Decomposition")
+    ax.set_title("Descriptive sequential ANOVA variance shares — HumanEval+ (N=39360; pass_at_1)")
     _save_figure(fig, "fig03_variance_decomposition", paths)
 
 
-def _fig_metric_distribution(df: pd.DataFrame, paths: AnalysisPaths) -> None:
+def _fig_metric_distribution(df: pd.DataFrame, paths: AnalysisPaths, metric: str) -> None:
     fig, ax = plt.subplots(figsize=(8, 5))
     ax.hist(df["metric_value"], bins=20, color="#8172B3", edgecolor="white")
-    ax.set_xlabel("normalized_code_match")
+    ax.set_xlabel(metric)
     ax.set_ylabel("Count")
-    ax.set_title("Distribution of normalized_code_match")
+    ax.set_title(f"Distribution of {metric} — HumanEval+ (N={len(df)})")
     _save_figure(fig, "fig04_metric_distribution", paths)
 
 
@@ -296,7 +296,7 @@ def _fig_residual_distribution(residuals: np.ndarray, paths: AnalysisPaths) -> N
     ax.hist(residuals, bins=30, color="#CCB974", edgecolor="white")
     ax.set_xlabel("Sequential ANOVA residual")
     ax.set_ylabel("Count")
-    ax.set_title("Residual Distribution")
+    ax.set_title("Sequential ANOVA residuals — HumanEval+ (pass_at_1)")
     _save_figure(fig, "fig05_residual_distribution", paths)
 
 
@@ -305,7 +305,7 @@ def _fig_ranking_stability(ranking_summary: pd.DataFrame, paths: AnalysisPaths) 
     plot_df = ranking_summary[ranking_summary["bootstrap_type"] != "overall"]
     ax.bar(plot_df["bootstrap_type"], plot_df["kendall_tau_mean"], yerr=plot_df["kendall_tau_std"], capsize=4, color="#64B5CD")
     ax.set_ylabel("Kendall τ (mean ± SD)")
-    ax.set_title("Ranking Stability under Bootstrap Resampling")
+    ax.set_title("Ranking stability under bootstrap — HumanEval+ (pass_at_1)")
     ax.set_ylim(-0.05, 1.05)
     _save_figure(fig, "fig06_ranking_stability", paths)
 
@@ -321,7 +321,7 @@ def _fig_pairwise_reversals(pairwise: pd.DataFrame, models: list[str], paths: An
     ax.set_yticks(range(len(models)))
     ax.set_xticklabels(models, rotation=35, ha="right")
     ax.set_yticklabels(models)
-    ax.set_title("Pairwise Ranking Reversal Probability")
+    ax.set_title("Pairwise ranking reversal probability — HumanEval+ (pass_at_1)")
     fig.colorbar(im, ax=ax, label="Probability")
     _save_figure(fig, "fig07_pairwise_reversals", paths)
 
@@ -333,15 +333,18 @@ def _fig_power_curves(power_grid: pd.DataFrame, paths: AnalysisPaths) -> None:
         ax.plot(sub["n_tasks"], sub["power"], marker="o", label=f"runs={n_runs}")
     ax.set_xlabel("Number of tasks")
     ax.set_ylabel("Simulated power")
-    ax.set_title("Power Simulation Curves (effect size = 0.05)")
+    ax.set_title(
+        "Prospective approximate power (normal t-test; Δ=0.05) — design-oriented, not post-hoc"
+    )
     ax.set_ylim(0, 1.05)
     ax.legend()
     _save_figure(fig, "fig08_power_curves", paths)
 
 
-def _write_latex_fragments(paths: AnalysisPaths) -> None:
+def _write_latex_fragments(paths: AnalysisPaths, *, metric: str) -> None:
+    metric_tex = metric.replace("_", r"\_")
     tables = (
-        r"% Auto-generated Paper 1 table fragments (IEEE)." "\n"
+        r"% Auto-generated Paper 1 table fragments." "\n"
         r"\input{latex/table1_dataset_summary.tex}" "\n"
         r"\input{latex/table2_performance_by_model.tex}" "\n"
         r"\input{latex/table3_performance_by_prompt.tex}" "\n"
@@ -350,29 +353,29 @@ def _write_latex_fragments(paths: AnalysisPaths) -> None:
         r"\input{latex/table6_effect_sizes.tex}" "\n"
     )
     figures = (
-        r"% Auto-generated Paper 1 figure fragments (IEEE)." "\n"
+        r"% Auto-generated Paper 1 figure fragments." "\n"
         r"\begin{figure}[!t]" "\n"
         r"  \centering" "\n"
         r"  \includegraphics[width=\linewidth]{figures/fig01_model_performance.pdf}" "\n"
-        r"  \caption{Mean normalized code-match performance by model with 95\% bootstrap confidence intervals.}" "\n"
+        rf"  \caption{{Mean {metric_tex} by model on HumanEval+ ($N=39360$) with 95\% bootstrap confidence intervals.}}" "\n"
         r"  \label{fig:model-performance}" "\n"
         r"\end{figure}" "\n\n"
         r"\begin{figure}[!t]" "\n"
         r"  \centering" "\n"
         r"  \includegraphics[width=\linewidth]{figures/fig02_prompt_performance.pdf}" "\n"
-        r"  \caption{Mean normalized code-match performance by prompt variant with 95\% bootstrap confidence intervals.}" "\n"
+        rf"  \caption{{Mean {metric_tex} by prompt variant on HumanEval+ with 95\% bootstrap confidence intervals.}}" "\n"
         r"  \label{fig:prompt-performance}" "\n"
         r"\end{figure}" "\n\n"
         r"\begin{figure}[!t]" "\n"
         r"  \centering" "\n"
         r"  \includegraphics[width=\linewidth]{figures/fig03_variance_decomposition.pdf}" "\n"
-        r"  \caption{Sequential ANOVA variance decomposition (percentage of total variance).}" "\n"
+        rf"  \caption{{Descriptive sequential ANOVA variance shares for {metric_tex} on HumanEval+ ($N=39360$). Not a G-study.}}" "\n"
         r"  \label{fig:variance-decomposition}" "\n"
         r"\end{figure}" "\n\n"
         r"\begin{figure}[!t]" "\n"
         r"  \centering" "\n"
         r"  \includegraphics[width=\linewidth]{figures/fig04_metric_distribution.pdf}" "\n"
-        r"  \caption{Observed distribution of normalized\_code\_match across all completed cells.}" "\n"
+        rf"  \caption{{Observed distribution of {metric_tex} across all completed HumanEval+ cells ($N=39360$).}}" "\n"
         r"  \label{fig:metric-distribution}" "\n"
         r"\end{figure}" "\n\n"
         r"\begin{figure}[!t]" "\n"
@@ -384,19 +387,19 @@ def _write_latex_fragments(paths: AnalysisPaths) -> None:
         r"\begin{figure}[!t]" "\n"
         r"  \centering" "\n"
         r"  \includegraphics[width=\linewidth]{figures/fig06_ranking_stability.pdf}" "\n"
-        r"  \caption{Ranking stability measured by Kendall $\tau$ under task, prompt, and run bootstrap resampling.}" "\n"
+        r"  \caption{Ranking stability measured by Kendall $\tau$ under task, prompt, and run bootstrap resampling (HumanEval+, pass\_at\_1).}" "\n"
         r"  \label{fig:ranking-stability}" "\n"
         r"\end{figure}" "\n\n"
         r"\begin{figure}[!t]" "\n"
         r"  \centering" "\n"
         r"  \includegraphics[width=\linewidth]{figures/fig07_pairwise_reversals.pdf}" "\n"
-        r"  \caption{Pairwise ranking reversal probabilities from bootstrap resampling.}" "\n"
+        r"  \caption{Pairwise ranking reversal probabilities from bootstrap resampling (HumanEval+, pass\_at\_1).}" "\n"
         r"  \label{fig:pairwise-reversals}" "\n"
         r"\end{figure}" "\n\n"
         r"\begin{figure}[!t]" "\n"
         r"  \centering" "\n"
         r"  \includegraphics[width=\linewidth]{figures/fig08_power_curves.pdf}" "\n"
-        r"  \caption{Monte Carlo power simulation curves for a two-model comparison (effect size = 0.05).}" "\n"
+        r"  \caption{Prospective, design-oriented, approximate Monte Carlo power for a two-model comparison (effect size $=0.05$; normal-score t-test). Not post-hoc power.}" "\n"
         r"  \label{fig:power-curves}" "\n"
         r"\end{figure}" "\n"
     )
@@ -501,6 +504,12 @@ def _write_main_findings(
     effect_sizes: pd.DataFrame,
     ranking_summary: pd.DataFrame,
     power_grid: pd.DataFrame,
+    *,
+    n_tasks: int,
+    n_prompts: int,
+    n_runs: int,
+    n_models: int,
+    metric: str,
 ) -> None:
     var_sorted = table5.sort_values("pct_total_variance", ascending=False)
     model_row = effect_sizes[effect_sizes["factor_key"] == "model"].iloc[0] if "model" in effect_sizes["factor_key"].values else None
@@ -508,14 +517,21 @@ def _write_main_findings(
     temp_row = effect_sizes[effect_sizes["factor_key"] == "temperature"].iloc[0] if "temperature" in effect_sizes["factor_key"].values else None
     run_row = effect_sizes[effect_sizes["factor_key"] == "run_id"].iloc[0] if "run_id" in effect_sizes["factor_key"].values else None
     overall_rank = ranking_summary[ranking_summary["bootstrap_type"] == "overall"].iloc[0]
-    power_at_design = float(
-        power_grid[
-            (power_grid["n_tasks"] == 20) & (power_grid["n_prompts"] == 5) & (power_grid["n_runs"] == 5)
-        ]["power"].mean()
+    design_mask = (
+        (power_grid["n_tasks"] == n_tasks)
+        & (power_grid["n_prompts"] == n_prompts)
+        & (power_grid["n_runs"] == n_runs)
     )
+    if not design_mask.any():
+        # Nearest design cell in the prospective power grid (may not match exact factorial).
+        design_mask = (
+            (power_grid["n_tasks"] == power_grid["n_tasks"].max())
+            & (power_grid["n_runs"] == n_runs)
+        )
+    power_at_design = float(power_grid.loc[design_mask, "power"].mean()) if design_mask.any() else float("nan")
 
     lines = [
-        "# Main Findings — Paper 1 Ollama Pilot",
+        f"# Main Findings — Paper 1 ({metric}; {n_tasks} tasks × {n_models} models)",
         "",
         "## Variance structure",
         "",
@@ -576,7 +592,10 @@ def _write_main_findings(
             "",
             "## Power",
             "",
-            f"At the realized design (20 tasks, 5 prompts, 5 runs), mean simulated power for effect size 0.05 is **{power_at_design:.3f}**.",
+            "Prospective, design-oriented, approximate Monte Carlo power (normal-score two-model "
+            f"t-test; effect size = 0.05). Nearest grid cell for the realized design "
+            f"({n_tasks} tasks, {n_prompts} prompts, {n_runs} runs) has mean simulated power "
+            f"**{power_at_design:.3f}**. This is not post-hoc power and is not evidence of an effect.",
             "",
             "## Top performers (descriptive only)",
             "",
@@ -585,9 +604,10 @@ def _write_main_findings(
             "",
             "## Limitations",
             "",
-            "All statements above are descriptive or simulation-based on a single pilot. "
-            "They do not establish causal effects of prompts or models, and they should not be extrapolated "
-            "beyond the six local models and twenty code tasks used here.",
+            "All statements above are descriptive or simulation-based on the frozen HumanEval+ "
+            f"confirmatory frame ({n_tasks} tasks, {n_models} models, {n_prompts} prompts, "
+            f"{n_runs} runs; metric={metric}). They do not establish causal effects of prompts "
+            "or models, and they should not be extrapolated beyond this protocol.",
             "",
         ]
     )
@@ -595,7 +615,7 @@ def _write_main_findings(
 
 
 def run_analysis(experiment_dir: Path, metric: str | None = None) -> AnalysisPaths:
-    experiment_dir = experiment_dir.resolve()
+    experiment_dir = resolve_experiment_dir(experiment_dir)
     paths = AnalysisPaths.from_experiment(experiment_dir)
     paths.ensure()
 
@@ -607,15 +627,19 @@ def run_analysis(experiment_dir: Path, metric: str | None = None) -> AnalysisPat
 
     df = _prepare_analysis_frame(experiment_dir, metric)
     axes = manifest.get("factorial_axes", {})
+    n_models = int(axes.get("models", df["model"].nunique()))
+    n_tasks = int(axes.get("tasks", df["task_id"].nunique()))
+    n_prompts = int(axes.get("prompt_variants", df["prompt_id"].nunique()))
+    n_runs = int(axes.get("runs", df["run_id"].nunique()))
 
     table1 = pd.DataFrame(
         [
             {
-                "models": axes.get("models", df["model"].nunique()),
-                "tasks": axes.get("tasks", df["task_id"].nunique()),
-                "prompts": axes.get("prompt_variants", df["prompt_id"].nunique()),
+                "models": n_models,
+                "tasks": n_tasks,
+                "prompts": n_prompts,
                 "temperatures": axes.get("temperatures", df["temperature"].nunique()),
-                "runs": axes.get("runs", df["run_id"].nunique()),
+                "runs": n_runs,
                 "total_observations": len(df),
                 "primary_metric": metric,
             }
@@ -638,11 +662,13 @@ def run_analysis(experiment_dir: Path, metric: str | None = None) -> AnalysisPat
     )
 
     gstudy = estimate_g_variance_components(df)
+    # Prospective / design-oriented approximate power grid (normal continuous approximation).
+    # Not post-hoc power. Grid spans pilot-scale and confirmatory task counts.
     power_grid = simulate_power_grid(
         gstudy.components,
         effect_size=0.05,
-        task_counts=[5, 10, 20],
-        prompt_counts=[2, 5],
+        task_counts=[10, 20, 40, 80, 120, 164],
+        prompt_counts=[1, 2, 4],
         run_counts=[1, 3, 5],
         n_simulations=N_POWER_SIM,
         seed=RANDOM_SEED,
@@ -660,16 +686,16 @@ def run_analysis(experiment_dir: Path, metric: str | None = None) -> AnalysisPat
     ranking.summary.to_csv(paths.csv / "ranking_fragility_summary.csv", index=False)
     ranking.pairwise_reversals.to_csv(paths.csv / "pairwise_reversals.csv", index=False)
 
-    _fig_model_performance(table2, paths)
-    _fig_prompt_performance(table3, paths)
+    _fig_model_performance(table2, paths, metric)
+    _fig_prompt_performance(table3, paths, metric)
     _fig_variance_decomposition(table5, paths)
-    _fig_metric_distribution(df, paths)
+    _fig_metric_distribution(df, paths, metric)
     _fig_residual_distribution(residuals, paths)
     _fig_ranking_stability(ranking.summary, paths)
     _fig_pairwise_reversals(ranking.pairwise_reversals, list(ranking.baseline_scores.index), paths)
     _fig_power_curves(power_grid, paths)
 
-    _write_latex_fragments(paths)
+    _write_latex_fragments(paths, metric=metric)
     _write_statistical_report(
         paths,
         manifest=manifest,
@@ -691,6 +717,11 @@ def run_analysis(experiment_dir: Path, metric: str | None = None) -> AnalysisPat
         effect_sizes=effect_sizes,
         ranking_summary=ranking.summary,
         power_grid=power_grid,
+        n_tasks=n_tasks,
+        n_prompts=n_prompts,
+        n_runs=n_runs,
+        n_models=n_models,
+        metric=metric,
     )
 
     manifest_out = {

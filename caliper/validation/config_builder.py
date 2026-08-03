@@ -20,6 +20,11 @@ REFERENCE_CONFIGS = {
     "mbpp": Path("configs/paper1/confirmatory_mbpp.yaml"),
 }
 
+FULL_REFERENCE_CONFIGS = {
+    "humaneval_plus": Path("configs/paper1/confirmatory_humaneval_full.yaml"),
+    "mbpp": Path("configs/paper1/confirmatory_mbpp.yaml"),
+}
+
 DATASET_PATHS = {
     "humaneval_plus": Path("data/benchmarks/humaneval_plus.jsonl"),
     "mbpp": Path("data/benchmarks/mbpp.jsonl"),
@@ -39,9 +44,15 @@ def resolve_benchmark(name: str) -> str:
     return BENCHMARK_ALIASES[key]
 
 
-def reference_config_path(benchmark: str) -> Path:
+def reference_config_path(benchmark: str, *, full: bool = False) -> Path:
     resolved = resolve_benchmark(benchmark)
+    if full:
+        return FULL_REFERENCE_CONFIGS[resolved]
     return REFERENCE_CONFIGS[resolved]
+
+
+def reference_config_path_legacy(benchmark: str) -> Path:
+    return reference_config_path(benchmark, full=False)
 
 
 def dataset_path(benchmark: str) -> Path:
@@ -58,10 +69,11 @@ def build_preflight_config(
     number_of_runs: int = 1,
     num_tasks: int = 3,
     seed: int = 20260404,
+    reference_config: Path | str | None = None,
 ) -> tuple[ExperimentConfig, Path, list[str]]:
     """Build a minimal end-to-end config without modifying confirmatory YAML files."""
     resolved = resolve_benchmark(benchmark)
-    reference_path = REFERENCE_CONFIGS[resolved]
+    reference_path = Path(reference_config) if reference_config else REFERENCE_CONFIGS[resolved]
     reference = load_config(reference_path)
     dataset = dataset_path(benchmark)
 

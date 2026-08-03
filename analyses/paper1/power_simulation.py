@@ -11,7 +11,7 @@ import pandas as pd
 from caliper.statistics.gtheory import estimate_g_variance_components
 from caliper.statistics.power import compute_power
 from caliper.statistics.power_sim import simulate_power_grid
-from caliper.statistics.prepare import prepare_results_table
+from caliper.statistics.prepare import completed_rows_only, prepare_results_table
 
 
 def main() -> None:
@@ -36,6 +36,8 @@ def main() -> None:
         raw = pd.read_json(args.results, orient="records", lines=True)
     else:
         raw = pd.read_csv(args.results)
+
+    raw = completed_rows_only(raw)
 
     from caliper.config.metrics import resolve_analysis_metric
 

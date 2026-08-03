@@ -12,7 +12,7 @@ from caliper.statistics.bootstrap import bootstrap_ci_by_factor
 from caliper.statistics.descriptive import descriptive_all_factors
 from caliper.statistics.gtheory import estimate_g_variance_components, simulate_d_study_grid
 from caliper.statistics.mixed_effects import fit_mixed_model
-from caliper.statistics.prepare import prepare_results_table
+from caliper.statistics.prepare import completed_rows_only, prepare_results_table
 from caliper.statistics.variance import decompose_variance
 
 
@@ -36,6 +36,9 @@ def main() -> None:
         raw = pd.read_json(args.results, orient="records", lines=True)
     else:
         raw = pd.read_csv(args.results)
+
+    # Guard against append-only historical failed rows in raw results dumps.
+    raw = completed_rows_only(raw)
 
     from caliper.config.metrics import resolve_analysis_metric
 

@@ -15,6 +15,11 @@ import structlog
 from caliper.config.schema import ExperimentConfig, PromptVariantConfig
 from caliper.runners.cells import cell_to_dict, expand_cells
 from caliper.runners.checkpoint import CheckpointStore
+from caliper.runners.failures import (
+    FailureWriter,
+    count_terminal_completions,
+    count_terminal_failures,
+)
 from caliper.runners.executor import (
     SUPPORTED_PROVIDER_TYPES,
     build_provider,
@@ -206,6 +211,12 @@ class ExperimentRunner:
             self.manifest.finished_at = datetime.now(tz=UTC)
             duration = time.monotonic() - self._execution_started_at
             if not self.dry_run:
+                jsonl_path = self.output_dir / "results.jsonl"
+                finalize_completed = self.manifest.completed_cells
+                finalize_failed = self.manifest.failed_cells
+                if jsonl_path.exists():
+                    finalize_completed = count_terminal_completions(jsonl_path)
+                    finalize_failed = count_terminal_failures(jsonl_path)
                 manifest = finalize_experiment(
                     config=self.config,
                     config_path=self.config_path,
@@ -214,8 +225,8 @@ class ExperimentRunner:
                     started_at=self.manifest.started_at,
                     finished_at=self.manifest.finished_at,
                     total_cells=self.manifest.total_cells,
-                    completed_cells=self.manifest.completed_cells,
-                    failed_cells=self.manifest.failed_cells,
+                    completed_cells=finalize_completed,
+                    failed_cells=finalize_failed,
                     skipped_cells=self.manifest.skipped_cells,
                     status=self.manifest.status,
                     execution_duration_seconds=duration,
@@ -240,6 +251,7 @@ class ExperimentRunner:
         layout = ensure_output_layout(self.output_dir)
         writer = ResultWriter(self.output_dir, self.config.experiment_id, self.run_id)
         checkpoint_store = CheckpointStore(layout["checkpoints"])
+        failure_writer = FailureWriter(self.output_dir)
 
         completed_ids = writer.load_existing()
         checkpoint_ids = checkpoint_store.load_completed_cell_ids()
@@ -299,6 +311,9 @@ class ExperimentRunner:
             if record.status == "completed":
                 checkpoint_store.write(record)
                 completed_ids.add(cell_id)
+            else:
+                checkpoint_store.write_failed(record)
+                failure_writer.append(record)
 
             progress.record_completion(success=record.status == "completed")
             if record.status == "completed":
@@ -311,8 +326,8 @@ class ExperimentRunner:
                     "run_id": self.run_id,
                     "experiment_id": self.config.experiment_id,
                     "updated_at": datetime.now(tz=UTC).isoformat(),
-                    "completed_cells": progress.completed_cells + progress.skipped_cells,
-                    "failed_cells": progress.failed_cells,
+                    "completed_cells": count_terminal_completions(writer.jsonl_path),
+                    "failed_cells": count_terminal_failures(writer.jsonl_path),
                     "execution_progress": progress.to_dict(),
                 }
             )

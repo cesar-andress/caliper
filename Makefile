@@ -1,4 +1,4 @@
-.PHONY: install install-dev lint format typecheck test test-cov clean run help paper1-analysis paper1-robustness paper1-confirmatory-prep paper1-confirmatory-analysis paper1-confirmatory-robustness paper1-preflight
+.PHONY: install install-dev lint format typecheck test test-cov clean run help paper1-analysis paper1-robustness paper1-confirmatory-prep paper1-confirmatory-analysis paper1-confirmatory-robustness paper1-preflight paper1-humaneval-full-prep paper1-humaneval-full-preflight paper1-humaneval-full-analysis paper1-humaneval-full-robustness paper1-humaneval-full-task-sampling paper1-humaneval-full-design-guidance
 
 PYTHON ?= python3.12
 VENV ?= .venv
@@ -8,6 +8,10 @@ PYTEST := $(VENV)/bin/pytest
 RUFF := $(VENV)/bin/ruff
 MYPY := $(VENV)/bin/mypy
 CALIPER := $(VENV_PYTHON) -m caliper
+
+PAPER1_CONFIRMATORY_DIR ?= experiments/paper1_confirmatory_humaneval/paper1_confirmatory_humaneval
+PAPER1_HUMANEVAL_FULL_DIR ?= experiments/paper1_confirmatory_humaneval_full/paper1_confirmatory_humaneval_full
+PAPER1_HUMANEVAL_FULL_CONFIG ?= configs/paper1/confirmatory_humaneval_full.yaml
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
@@ -57,14 +61,43 @@ paper1-confirmatory-prep: install ## Materialize benchmarks and write confirmato
 
 paper1-confirmatory-analysis: ## Publication analysis for a confirmatory experiment directory
 	$(PYTHON) analyses/paper1/generate_publication_analysis.py \
-		--experiment-dir experiments/paper1_confirmatory_humaneval
+		--experiment-dir $(PAPER1_CONFIRMATORY_DIR)
 
 paper1-confirmatory-robustness: ## Robustness + GLMM analysis for confirmatory experiment
 	$(PYTHON) analyses/paper1/generate_robustness_analysis.py \
-		--experiment-dir experiments/paper1_confirmatory_humaneval
+		--experiment-dir $(PAPER1_CONFIRMATORY_DIR)
 
 paper1-preflight: install ## End-to-end pre-flight validation (requires Ollama + benchmarks)
 	$(CALIPER) validate-confirmatory --benchmark humaneval --verbose
+
+paper1-humaneval-full-prep: install ## Write 164-task HumanEval+ config and protocol comparison report
+	$(CALIPER) benchmarks write-humaneval-full-config
+	$(CALIPER) compare-protocol
+
+paper1-humaneval-full-preflight: install ## Pre-flight for full HumanEval+ protocol (3 tasks, requires Ollama)
+	$(CALIPER) validate-confirmatory --benchmark humaneval --verbose \
+		--reference-config $(PAPER1_HUMANEVAL_FULL_CONFIG) \
+		--expected-total-tasks 164 \
+		--tasks 3 --runs 1 --temperature 0.0
+
+paper1-humaneval-full-analysis: ## Publication analysis for full HumanEval+ experiment (after completion)
+	$(PYTHON) analyses/paper1/generate_publication_analysis.py \
+		--experiment-dir $(PAPER1_HUMANEVAL_FULL_DIR)
+	$(PYTHON) analyses/paper1/generate_design_guidance.py \
+		--experiment-dir $(PAPER1_HUMANEVAL_FULL_DIR)
+
+paper1-humaneval-full-robustness: ## Robustness + GLMM analysis for full HumanEval+ experiment
+	$(PYTHON) analyses/paper1/generate_robustness_analysis.py \
+		--experiment-dir $(PAPER1_HUMANEVAL_FULL_DIR)
+
+paper1-humaneval-full-task-sampling: ## Compare 40-task subset against full HumanEval+ benchmark
+	$(CALIPER) analyze task-sampling \
+		--full-experiment $(PAPER1_HUMANEVAL_FULL_DIR) \
+		--subset-experiment $(PAPER1_CONFIRMATORY_DIR)
+
+paper1-humaneval-full-design-guidance: ## Export design-guidance placeholders or populated recommendations
+	$(PYTHON) analyses/paper1/generate_design_guidance.py \
+		--experiment-dir $(PAPER1_HUMANEVAL_FULL_DIR)
 
 clean: ## Remove build artifacts and caches
 	rm -rf $(VENV) dist build *.egg-info .pytest_cache .mypy_cache .ruff_cache htmlcov .coverage

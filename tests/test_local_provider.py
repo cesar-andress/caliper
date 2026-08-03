@@ -156,8 +156,10 @@ class TestLocalProviderGeneration:
 
 
 class TestGpuMetadata:
-    @patch("caliper.models.local.metadata.torch", create=True)
-    def test_collect_gpu_metadata_when_cuda_available(self, mock_torch: MagicMock) -> None:
+    def test_collect_gpu_metadata_when_cuda_available(self) -> None:
+        import sys
+
+        mock_torch = MagicMock()
         mock_torch.cuda.is_available.return_value = True
         mock_torch.version.cuda = "12.1"
         props = MagicMock()
@@ -167,7 +169,8 @@ class TestGpuMetadata:
         props.minor = 9
         mock_torch.cuda.get_device_properties.return_value = props
 
-        meta = collect_gpu_metadata(device="cuda:0")
+        with patch.dict(sys.modules, {"torch": mock_torch}):
+            meta = collect_gpu_metadata(device="cuda:0")
         assert meta.gpu_available is True
         assert meta.gpu_name == "NVIDIA GeForce RTX 4090"
         assert meta.gpu_compute_capability == "8.9"

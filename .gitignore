@@ -1,40 +1,35 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.egg-info/
-dist/
-build/
-.eggs/
-*.egg
-
-# Virtual environments
-.venv/
-venv/
-env/
 
 # Environment
-.env
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# Testing / coverage
-.pytest_cache/
-.coverage
-htmlcov/
-.mypy_cache/
-.ruff_cache/
-
 # Experiment outputs
-outputs/
-experiments/
-runs/
-*.parquet.tmp
-
+# IDE
 # OS
+# Python
+# Testing / coverage
+# Virtual environments
+*$py.class
+build/
+.coverage
+dist/
 .DS_Store
+*.egg
+*.egg-info/
+.eggs/
+.env
+env/
+experiments/
+htmlcov/
+.idea/
+.mypy_cache/
+outputs/
+*.parquet.tmp
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+runs/
+*.swo
+*.swp
 Thumbs.db
+.venv/
+venv/
+.vscode/
