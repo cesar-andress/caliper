@@ -1,0 +1,53 @@
+cff-version: 1.2.0
+title: "CALIPER: Comparative Analysis of LLM Inference Perturbation, Evaluation, and Ranking"
+message: "If you use this software, please cite it using the metadata from this file."
+type: software
+authors:
+  - family-names: Andrés
+    given-names: César
+    orcid: "https://orcid.org/0009-0001-8968-3404"
+    email: "cesar.andress@ucjc.edu"
+    affiliation: "CRIA-BDHS Research Group, Higher Polytechnic School of Technology and Science, Universidad Camilo José Cela, Madrid, Spain"
+  - family-names: Martín-Moncunill
+    given-names: David
+    orcid: "https://orcid.org/0000-0003-2422-9005"
+    email: "david.martinm@ucjc.edu"
+    affiliation: "CRIA-BDHS Research Group, Higher Polytechnic School of Technology and Science, Universidad Camilo José Cela, Madrid, Spain"
+  - family-names: Baños
+    given-names: José Manuel
+    orcid: "https://orcid.org/0009-0004-9971-7390"
+    affiliation: "CRIA-BDHS Research Group, Higher Polytechnic School of Technology and Science, Universidad Camilo José Cela, Madrid, Spain"
+version: "1.0.0"
+license: MIT
+repository-code: "https://github.com/cesar-andress/caliper"
+url: "https://github.com/cesar-andress/caliper"
+date-released: "2026-08-03"
+keywords:
+  - llm evaluation
+  - variance decomposition
+  - statistical power
+  - ranking fragility
+  - generalizability
+  - reproducible research
+  - empirical software engineering
+abstract: >-
+  CALIPER is a reproducible research artifact for designing, executing, and
+  analyzing factorial LLM evaluation experiments with explicit attention to
+  variance, statistical power, and ranking stability. It supports Paper 1
+  confirmatory HumanEval+ analyses (variance facets, binomial mixed models,
+  task-sampling stability, and design guidance) and Paper 2 ranking-fragility
+  workflows. This v1.0.0 release is the first public research archive intended
+  for Zenodo deposition alongside Paper 1.
+preferred-citation:
+  type: software
+  title: "CALIPER: Comparative Analysis of LLM Inference Perturbation, Evaluation, and Ranking"
+  authors:
+    - family-names: Andrés
+      given-names: César
+    - family-names: Martín-Moncunill
+      given-names: David
+    - family-names: Baños
+      given-names: José Manuel
+  year: 2026
+  version: "1.0.0"
+  notes: "Cite this software artifact; update DOI after Zenodo minting."

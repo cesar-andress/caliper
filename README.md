@@ -6,7 +6,11 @@ CALIPER is a reproducible research artifact for designing, executing, and analyz
 
 It is intended to support empirical studies that treat benchmark scores as measurements subject to sampling and protocol variation—not as fixed constants. The software is CLI-first, configuration-driven, and modular; it does not prescribe a single benchmark or model suite.
 
-**Status:** Alpha research software (v0.1.0). APIs and analysis methods may change. See limitations in [`analyses/paper1/README.md`](analyses/paper1/README.md).
+**Status:** Public research release **v1.0.0** (Zenodo archival companion to Paper 1). See [`RELEASE_NOTES_v1.0.0.md`](RELEASE_NOTES_v1.0.0.md) and limitations in [`analyses/paper1/README.md`](analyses/paper1/README.md).
+
+**Authors:** César Andrés (corresponding; [ORCID 0009-0001-8968-3404](https://orcid.org/0009-0001-8968-3404)), David Martín-Moncunill ([ORCID 0000-0003-2422-9005](https://orcid.org/0000-0003-2422-9005)), José Manuel Baños ([ORCID 0009-0004-9971-7390](https://orcid.org/0009-0004-9971-7390)).  
+**Affiliation:** CRIA-BDHS Research Group, Higher Polytechnic School of Technology and Science, Universidad Camilo José Cela, Madrid, Spain.  
+Canonical identity rules: [`docs/author_identity.md`](docs/author_identity.md).
 
 ---
 
@@ -30,7 +34,7 @@ CALIPER implements the pipelines described in two companion manuscripts (LaTeX s
 
 | Paper | Focus | Artifact modules |
 |-------|--------|------------------|
-| **Paper 1** | Variance decomposition, generalizability (G-/D-study), and statistical power in factorial LLM evaluation | `caliper/statistics/`, `caliper analyze variance`, `caliper analyze power`, [`analyses/paper1/`](analyses/paper1/) |
+| **Paper 1** | Variance facets, design guidance, and task-sampling reliability in factorial LLM evaluation | `caliper/statistics/`, `caliper analyze variance`, `caliper analyze power`, [`analyses/paper1/`](analyses/paper1/) |
 | **Paper 2** | Ranking fragility: stability of model orderings under task, prompt, and run resampling | `caliper/ranking/`, `caliper ranking-fragility` |
 
 The artifact is the **executable counterpart** to those papers: YAML configs define designs; runners produce result matrices; analysis commands implement the estimators discussed in the manuscripts. Manuscript text and empirical claims are maintained separately; this repository provides tools and examples, not published findings.
@@ -294,44 +298,27 @@ make test-cov   # pytest with coverage
 
 ## Citation
 
-If you use CALIPER in academic work, please cite the accompanying papers (BibTeX to be finalized upon publication):
+If you use CALIPER, please cite this software artifact (and the companion papers when published). Machine-readable metadata: [`CITATION.cff`](CITATION.cff).
 
 ```bibtex
-@misc{caliper2026artifact,
-  author       = {{CALIPER Team}},
-  title        = {{CALIPER}: Reproducible Factorial Evaluation, Variance Analysis,
-                  and Ranking Fragility for Large Language Models},
-  year         = {2026},
-  howpublished = {Software artifact},
-  note         = {https://github.com/PLACEHOLDER/caliper --- URL and version TBD}
-}
-
-@article{caliper2026paper1,
-  author  = {Author, A. and Author, B.},
-  title   = {How Much Variance Is Hidden in {LLM} Evaluation?
-             A Generalizability Theory Study of Model, Prompt, Task, Run, and Decoding Effects},
-  journal = {Information Processing \& Management},
+@software{andres2026caliper,
+  author  = {Andr{\'e}s, C{\'e}sar and Mart{\'i}n-Moncunill, David and Ba{\~n}os, Jos{\'e} Manuel},
+  title   = {{CALIPER}: Comparative Analysis of {LLM} Inference Perturbation,
+             Evaluation, and Ranking},
   year    = {2026},
-  note    = {In preparation}
-}
-
-@article{caliper2026paper2,
-  author  = {Author, A. and Author, B.},
-  title   = {Ranking Fragility in {LLM} Benchmarks:
-             When Model Leaderboards Collapse Under Resampling},
-  journal = {Knowledge-Based Systems},
-  year    = {2026},
-  note    = {In preparation}
+  version = {1.0.0},
+  url     = {https://github.com/cesar-andress/caliper},
+  note    = {First public research release accompanying Paper 1; add Zenodo DOI after minting}
 }
 ```
 
-Replace placeholders with published bibliographic data when available.
+Paper bibliographic entries will be updated upon acceptance; do not invent DOIs.
 
 ---
 
 ## License
 
-Intended distribution: **MIT License** (see [`pyproject.toml`](pyproject.toml)). A `LICENSE` file will be added before public release. Third-party model APIs and weights are subject to their respective terms.
+**MIT License** — see [`LICENSE`](LICENSE). Third-party model APIs and weights are subject to their respective terms.
 
 ---
 
@@ -339,6 +326,9 @@ Intended distribution: **MIT License** (see [`pyproject.toml`](pyproject.toml)).
 
 - [Getting started](docs/getting-started.md)
 - [Architecture](docs/architecture.md)
+- [Author identity](docs/author_identity.md)
+- [Release notes v1.0.0](RELEASE_NOTES_v1.0.0.md)
+- [Changelog](CHANGELOG.md)
 - [Local models](docs/local-models.md)
 - [Development roadmap](docs/roadmap.md) and [issue backlog](docs/issues.md)
 - [Paper 1 analysis scripts](analyses/paper1/README.md)

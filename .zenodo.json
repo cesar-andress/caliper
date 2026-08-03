@@ -1,0 +1,41 @@
+{
+  "title": "CALIPER: Comparative Analysis of LLM Inference Perturbation, Evaluation, and Ranking",
+  "version": "v1.0.0",
+  "upload_type": "software",
+  "description": "First public research release of CALIPER, a reproducible factorial LLM evaluation framework for variance-aware analysis, statistical design guidance, and ranking stability. Accompanying Paper 1 (Empirical Software Engineering manuscript in preparation). Authors: César Andrés (corresponding); David Martín-Moncunill; José Manuel Baños. Primary entry points: README.md, docs/getting-started.md, docs/author_identity.md. Experiment outputs are not bundled; regenerate from configs under configs/.",
+  "creators": [
+    {
+      "name": "Andrés, César",
+      "affiliation": "CRIA-BDHS Research Group, Higher Polytechnic School of Technology and Science, Universidad Camilo José Cela, Madrid, Spain",
+      "orcid": "0009-0001-8968-3404"
+    },
+    {
+      "name": "Martín-Moncunill, David",
+      "affiliation": "CRIA-BDHS Research Group, Higher Polytechnic School of Technology and Science, Universidad Camilo José Cela, Madrid, Spain",
+      "orcid": "0000-0003-2422-9005"
+    },
+    {
+      "name": "Baños, José Manuel",
+      "affiliation": "CRIA-BDHS Research Group, Higher Polytechnic School of Technology and Science, Universidad Camilo José Cela, Madrid, Spain",
+      "orcid": "0009-0004-9971-7390"
+    }
+  ],
+  "keywords": [
+    "LLM evaluation",
+    "variance decomposition",
+    "statistical power",
+    "ranking fragility",
+    "reproducible research",
+    "empirical software engineering",
+    "HumanEval+"
+  ],
+  "license": "mit",
+  "access_right": "open",
+  "related_identifiers": [
+    {
+      "relation": "isSupplementTo",
+      "identifier": "https://github.com/cesar-andress/caliper",
+      "resource_type": "software"
+    }
+  ]
+}
