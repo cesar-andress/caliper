@@ -80,10 +80,10 @@ Version strings for the package remain **1.0.0** / tag **v1.0.0**. Historical fr
 
 | Field | Value |
 |-------|-------|
-| Commit | `83669287b4e0530cd756b74c4c82bc6adfc54f86` |
-| Tag | `v1.0.0` → `8366928` (`ce0a696` annotated tag object) |
+| Commit | `fa7883f8bf5cc197152ef4376a8a9090491e0de8` |
+| Tag | `v1.0.0` (annotated; points at that commit) |
 | Remote | `origin` (`github.com/cesar-andress/caliper`) |
-| GitHub status | `main` and `v1.0.0` pushed (tag force-updated) |
+| GitHub status | `main` + `v1.0.0` pushed; GitHub Release API 403 from this token (tag is on remote; create/refresh Release in UI or with a token that has `contents:write` so Zenodo webhook re-archives) |
 
 ---
 
