@@ -80,7 +80,7 @@ Version strings for the package remain **1.0.0** / tag **v1.0.0**. Historical fr
 
 | Field | Value |
 |-------|-------|
-| Commit | `77ac072934e6523d18c94eff45a9161ec818d97d` |
+| Commit | `5d43e3a46d6acf6a64f116bd79804753411d89fd` |
 | Tag | `v1.0.0` (annotated; points at that commit) |
 | Remote | `origin` (`github.com/cesar-andress/caliper`) |
 | GitHub status | `main` + `v1.0.0` on origin. GitHub Release API returned 403 with the available token — recreate the GitHub Release from tag `v1.0.0` in the UI (or with a PAT that can write releases) so the Zenodo webhook re-archives the zip that includes `artifacts/paper1/`. |
