@@ -1,0 +1,11 @@
+{
+  "arm": "A",
+  "n": 6560,
+  "empty_rate": 0.0,
+  "pass_at_1_mean": 0.8605182926829268,
+  "done_reason": "stop",
+  "think": false,
+  "num_predict": 1024,
+  "software": "CALIPER 1.1.0",
+  "role": "POST-FREEZE DIAGNOSTIC (not confirmatory)"
+}

@@ -1,0 +1,16 @@
+{
+  "arm": "B",
+  "final_stored_n": 801,
+  "decision_n": 800,
+  "events_empty_budget": 145,
+  "theta_hat": 0.18125,
+  "wilson_95": [
+    0.156,
+    0.209
+  ],
+  "think": true,
+  "num_predict": 4096,
+  "software": "CALIPER 1.1.0",
+  "role": "POST-FREEZE DIAGNOSTIC (not confirmatory)",
+  "sequential_note": "Sequential stop at decision n=800; one extra stored row yields final_stored_n=801."
+}

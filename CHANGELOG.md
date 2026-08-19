@@ -5,7 +5,7 @@ All notable changes to CALIPER are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.0] — 2026-08-19 (main branch; not re-tagged on Zenodo)
+## [1.1.0] — 2026-08-20 (Zenodo version deposit; does not rewrite v1.0.0)
 
 ### Added
 
@@ -16,16 +16,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Post-freeze Paper 1 qwen3 diagnostic configs (`paper1_confirmatory_humaneval_qwen3_v11_arm_{a,b}.yaml`).
 - Diagnostic scripts under `scripts/` for Arm A/B provenance and analysis (no LLM in CI).
 - Tests: `tests/test_reasoning_controls.py`, expanded `tests/test_ollama_provider.py`.
+- Public **POST-FREEZE DIAGNOSTIC** package:
+  `artifacts/paper1/qwen3_postfreeze_diagnostics/` (Arm A/B cell tables with provider
+  fields; freeze-era Qwen3 forensic extract for Appendix A; checksums/README).
 
 ### Changed
 
-- Package version on `main` set to **1.1.0**; published Zenodo deposition remains **v1.0.0**
-  (`10.5281/zenodo.21780089`) and must not be retroactively rewritten.
+- Package version on `main` set to **1.1.0**.
+- Zenodo metadata (`.zenodo.json`) for the **new** version deposit distinguishes
+  confirmatory freeze vs post-freeze diagnostics and corrects the stale
+  "regenerate outputs" implication.
+- Historical Zenodo **v1.0.0** (`10.5281/zenodo.21780089`) remains immutable.
 
 ### Notes
 
-- v1.0.0 behavior (Paper 1 confirmatory freeze) is historical; frozen parquet bytes unchanged.
-- v1.1.0 capabilities apply to new runs only.
+- Confirmatory `statistical_dataset.parquet` SHA-256 unchanged:
+  `95209fff2f742d59b52aa5cf5616f1395ef7fc01fd87fe025c485577bca0d1c9`.
+- v1.1.0 diagnostic capabilities and Arm A/B evidence apply outside confirmatory $N$.
 
 ## [1.0.0] — 2026-08-03
 

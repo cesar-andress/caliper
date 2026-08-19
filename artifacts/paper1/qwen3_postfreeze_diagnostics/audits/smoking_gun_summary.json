@@ -1,0 +1,91 @@
+[
+  {
+    "source": "batch2",
+    "task": "task-humaneval_plus-144",
+    "arm": "1024",
+    "done_reason": "length",
+    "eval_count": 1024,
+    "response_empty": true,
+    "thinking_len": 3376
+  },
+  {
+    "source": "batch2",
+    "task": "task-humaneval_plus-066",
+    "arm": "1024",
+    "done_reason": "length",
+    "eval_count": 1024,
+    "response_empty": true,
+    "thinking_len": 4277
+  },
+  {
+    "source": "batch2",
+    "task": "task-humaneval_plus-095",
+    "arm": "1024",
+    "done_reason": "length",
+    "eval_count": 1024,
+    "response_empty": true,
+    "thinking_len": 2922
+  },
+  {
+    "source": "batch2",
+    "task": "task-humaneval_plus-072",
+    "arm": "1024",
+    "done_reason": "stop",
+    "eval_count": 739,
+    "response_empty": false,
+    "thinking_len": 2418
+  },
+  {
+    "source": "first_repro",
+    "task": "task-humaneval_plus-042",
+    "arm": "1024",
+    "done_reason": "length",
+    "eval_count": 1024,
+    "response_empty": true,
+    "thinking_len": 3803
+  },
+  {
+    "source": "first_repro",
+    "task": "task-humaneval_plus-042",
+    "arm": "think_false",
+    "done_reason": "stop",
+    "eval_count": 50,
+    "response_empty": false,
+    "thinking_len": 0
+  },
+  {
+    "source": "first_repro",
+    "task": "task-humaneval_plus-042",
+    "arm": "4096",
+    "done_reason": "stop",
+    "eval_count": 1298,
+    "response_empty": false,
+    "thinking_len": 4153
+  },
+  {
+    "source": "first_repro",
+    "task": "task-humaneval_plus-018",
+    "arm": "1024",
+    "done_reason": "length",
+    "eval_count": 1024,
+    "response_empty": true,
+    "thinking_len": 3952
+  },
+  {
+    "source": "first_repro",
+    "task": "task-humaneval_plus-018",
+    "arm": "think_false",
+    "done_reason": "stop",
+    "eval_count": 83,
+    "response_empty": false,
+    "thinking_len": 0
+  },
+  {
+    "source": "synthetic",
+    "arm": "F_256",
+    "done_reason": "length",
+    "eval_count": 256,
+    "response_empty": true,
+    "thinking_len": 1132
+  }
+]

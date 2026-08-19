@@ -1,0 +1,2564 @@
+experiment_id: paper1_confirmatory_humaneval_qwen3_v11_arm_a
+description: 'v1.1 Arm A: qwen3:32b only, think=false, num_predict=1024; identical
+  tasks/prompts/temps/runs/seeds to v1.0'
+random_seed: 20260404
+primary_metric: pass_at_1
+evaluation_metrics:
+- pass_at_1
+- syntax_check
+- normalized_code_match
+- execution_latency_ms
+- token_count
+providers:
+  ollama_local:
+    provider_type: ollama
+    base_url: http://localhost:11434
+    timeout_seconds: 300
+models:
+- id: qwen3_32b
+  provider: ollama_local
+  model_id: qwen3:32b
+  think: 'false'
+  decoding:
+    max_tokens: 1024
+    top_p: 1.0
+    think: 'false'
+prompt_variants:
+- id: minimal
+  template: 'Complete the following Python programming task.
+
+
+    {input}
+
+
+    Respond with exactly one Python code block using triple backticks (` ```python
+    `). Do not include explanations, commentary, or text outside the code block.'
+- id: explicit_reasoning
+  template: 'Solve the following Python programming task. You may reason internally,
+    but your response must contain only code in the required format.
+
+
+    {input}
+
+
+    Respond with exactly one Python code block using triple backticks (` ```python
+    `). Do not include explanations, commentary, or text outside the code block.'
+- id: testing_oriented
+  template: 'Write Python code for the following task so that it passes hidden unit
+    tests.
+
+
+    {input}
+
+
+    Respond with exactly one Python code block using triple backticks (` ```python
+    `). Do not include explanations, commentary, or text outside the code block.'
+- id: professional
+  template: 'As a professional Python developer, implement the following task with
+    clear, maintainable code.
+
+
+    {input}
+
+
+    Respond with exactly one Python code block using triple backticks (` ```python
+    `). Do not include explanations, commentary, or text outside the code block.'
+tasks:
+- id: task-humaneval_plus-001
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-0
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-002
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-1
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-003
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-10
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-004
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-100
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-005
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-101
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-006
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-102
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-007
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-103
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-008
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-104
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-009
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-105
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-010
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-106
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-011
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-107
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-012
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-108
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-013
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-109
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-014
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-11
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-015
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-110
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-016
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-111
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-017
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-112
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-018
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-113
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-019
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-114
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-020
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-115
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-021
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-116
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-022
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-117
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-023
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-118
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-024
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-119
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-025
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-12
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-026
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-120
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-027
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-121
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-028
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-122
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-029
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-123
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-030
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-124
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-031
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-125
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-032
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-126
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-033
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-127
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-034
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-128
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-035
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-129
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-036
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-13
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-037
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-130
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-038
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-131
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-039
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-132
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-040
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-133
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-041
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-134
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-042
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-135
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-043
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-136
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-044
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-137
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-045
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-138
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-046
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-139
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-047
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-14
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-048
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-140
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-049
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-141
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-050
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-142
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-051
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-143
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-052
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-144
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-053
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-145
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-054
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-146
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-055
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-147
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-056
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-148
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-057
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-149
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-058
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-15
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-059
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-150
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-060
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-151
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-061
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-152
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-062
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-153
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-063
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-154
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-064
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-155
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-065
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-156
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-066
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-157
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-067
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-158
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-068
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-159
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-069
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-16
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-070
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-160
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-071
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-161
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-072
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-162
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-073
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-163
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-074
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-17
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-075
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-18
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-076
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-19
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-077
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-2
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-078
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-20
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-079
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-21
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-080
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-22
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-081
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-23
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-082
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-24
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-083
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-25
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-084
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-26
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-085
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-27
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-086
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-28
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-087
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-29
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-088
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-3
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-089
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-30
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-090
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-31
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-091
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-32
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-092
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-33
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-093
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-34
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-094
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-35
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-095
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-36
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-096
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-37
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-097
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-38
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-098
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-39
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-099
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-4
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-100
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-40
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-101
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-41
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-102
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-42
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-103
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-43
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-104
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-44
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-105
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-45
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-106
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-46
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-107
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-47
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-108
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-48
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-109
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-49
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-110
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-5
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-111
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-50
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-112
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-51
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-113
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-52
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-114
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-53
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-115
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-54
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-116
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-55
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-117
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-56
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-118
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-57
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-119
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-58
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-120
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-59
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-121
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-6
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-122
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-60
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-123
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-61
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-124
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-62
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-125
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-63
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-126
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-64
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-127
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-65
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-128
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-66
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-129
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-67
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-130
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-68
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-131
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-69
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-132
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-7
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-133
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-70
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-134
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-71
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-135
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-72
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-136
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-73
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-137
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-74
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-138
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-75
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-139
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-76
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-140
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-77
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-141
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-78
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-142
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-79
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-143
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-8
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-144
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-80
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-145
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-81
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-146
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-82
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-147
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-83
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-148
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-84
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-149
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-85
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-150
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-86
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-151
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-87
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-152
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-88
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-153
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-89
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-154
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-9
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-155
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-90
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-156
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-91
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-157
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-92
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-158
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-93
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-159
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-94
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-160
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-95
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-161
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-96
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-162
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-97
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-163
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-98
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+- id: task-humaneval_plus-164
+  domain: executable_code_generation
+  dataset: data/benchmarks/humaneval_plus.jsonl
+  num_samples: 1
+  metrics:
+  - pass_at_1
+  - syntax_check
+  - normalized_code_match
+  - execution_latency_ms
+  - token_count
+  extra:
+    filter_task_id: humaneval-99
+    execution:
+      timeout_seconds: 5.0
+      memory_mb: 512
+temperatures:
+- 0.0
+- 0.2
+number_of_runs: 5
+decoding:
+  max_tokens: 1024
+  top_p: 1.0
+  think: 'false'
+output:
+  directory: ./outputs/paper1_confirmatory_humaneval_qwen3_v11_arm_a
+  format: parquet
+  save_raw_responses: true
+  save_thinking_text: false
+logging:
+  level: INFO
+  log_to_file: true
+  log_format: json
+execution:
+  shuffle: true
+  parallel_workers: 1
+study_metadata:
+  study_type: confirmatory
+  benchmark: humaneval_plus
+  prompt_protocol: controlled_output_format_v1
+  pilot_reference: experiments/paper1_ollama_pilot
+  extension_of: paper1_confirmatory_humaneval
+  reference_config: configs/paper1/confirmatory_humaneval.yaml
+  task_selection: full_benchmark
+  task_count: 164
+metadata:
+  caliper_dataset_version: v1.1
+  parent_freeze: paper1_confirmatory_humaneval_full
+  parent_artifact: artifacts/paper1/frozen
+  scope: qwen3_32b_only
+  protocol_arm: paper1_confirmatory_humaneval_qwen3_v11_arm_a
+  think: 'false'
+  num_predict: 1024
+  note: Out-of-freeze diagnostic; does not mutate v1.0

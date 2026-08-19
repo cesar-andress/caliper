@@ -1,43 +1,49 @@
 # Paper 1 frozen artifact package
 
 This directory is the **analysis-reproduction bundle** for Paper 1
-(*Pass@1 Is a Measurement: Facet Accounting for HumanEval+-Style Function-Level
-Code Synthesis Evaluation*).
+(*Model–Task Heterogeneity and Instrumentation Distortion in HumanEval+ Pass@1
+Evaluation*).
 
-It is intentionally small: it includes the frozen statistical analysis dataset
-and provenance documents required to reproduce the paper’s tables **without**
-re-running local LLM inference.
+It includes the frozen confirmatory statistical analysis dataset and provenance
+documents required to reproduce the paper’s confirmatory tables **without**
+re-running local LLM inference, plus a clearly separated post-freeze diagnostic
+package for RQ2.
 
 ## Contents
 
 | Path | Role |
 |------|------|
-| `frozen/statistical_dataset.parquet` | Canonical analysis input (`N=39,360`, metric `pass_at_1`) |
+| `frozen/statistical_dataset.parquet` | **CONFIRMATORY** analysis input (`N=39,360`) |
 | `frozen/config.yaml` | Locked experiment configuration snapshot |
 | `frozen/manifest.json` | Run manifest (completed cells, recovery run id) |
 | `frozen/recovery_audit.jsonl` | Recovery audit trail |
-| `frozen/paper1_dataset_freeze*.md` / `*_checksums.txt` | Freeze documentation and original checksum ledger |
-| `frozen/integrity_audit.md` | Freeze-gate integrity audit (`SAFE TO FREEZE`) |
+| `frozen/paper1_dataset_freeze*.md` / `*_checksums.txt` | Freeze documentation and file-integrity checksum ledger |
+| `frozen/integrity_audit.md` | Freeze-gate integrity audit |
 | `frozen/analysis_manifest.md` | Analysis export inventory |
 | `analysis_exports/` | Locked GLMM/variance CSV exports + compliant-panel reanalysis CSVs |
-| `protocol/confirmatory_humaneval_full.yaml` | Version-controlled full HumanEval+ config |
-| `protocol/paper1_humaneval_full_protocol_comparison.*` | 40-task vs 164-task protocol comparison (documented amendment) |
+| `qwen3_postfreeze_diagnostics/` | **POST-FREEZE DIAGNOSTIC EVIDENCE** (Arms A/B + Appendix A extract) |
+| `protocol/` | Version-controlled full HumanEval+ config and amendment notes |
 | `scripts/verify_frozen_dataset.py` | Checksum + row-count verification |
 | `scripts/reproduce_paper1_core_tables.py` | Regenerates core Type-I / compliance CSVs from the freeze |
-| `SHA256SUMS` | Digests for all packaged files |
+| `SHA256SUMS` | Digests for packaged confirmatory files |
+
+## Confirmatory vs post-freeze
+
+- **Confirmatory freeze** (`frozen/`): immutable primary evidence for RQ1 and the
+  descriptive partitions. SHA-256 of `statistical_dataset.parquet`:
+  `95209fff2f742d59b52aa5cf5616f1395ef7fc01fd87fe025c485577bca0d1c9`.
+- **Post-freeze diagnostics** (`qwen3_postfreeze_diagnostics/`): Arm A/B and the
+  Qwen3 forensic cell extract for Appendix A / RQ2. **Not** merged into
+  confirmatory $N$. See that directory’s `README.md`.
 
 ## What is not included
 
-- Full append-only `results.jsonl` / raw completion dumps under `experiments/`
-  (large; local-only; not required for analysis reproduction from
-  `statistical_dataset.parquet`)
+- Full append-only `results.jsonl` / unrestricted raw completion dumps under
+  `experiments/` (not required to audit confirmatory tables or Appendix A once
+  the forensic extract is present)
 - Model weights and Ollama blobs
+- Model-weight / quantization digests (never recorded)
 - Manuscript LaTeX sources (companion workspace)
-
-Execution reproduction of the factorial (re-running 39,360 local inferences)
-requires matching served Ollama tags, hardware, and the configs under
-`configs/paper1/`. Exact on-disk quantization digests were not recorded in the
-freeze metadata.
 
 ## Verify and reproduce (analysis)
 
@@ -53,7 +59,7 @@ Expected verify output includes:
 - `sha256 = 95209fff2f742d59b52aa5cf5616f1395ef7fc01fd87fe025c485577bca0d1c9`
 - `rows = 39360`
 
-Optional full checksum check of the package:
+Optional full checksum check of the confirmatory package files:
 
 ```bash
 cd artifacts/paper1 && sha256sum -c SHA256SUMS

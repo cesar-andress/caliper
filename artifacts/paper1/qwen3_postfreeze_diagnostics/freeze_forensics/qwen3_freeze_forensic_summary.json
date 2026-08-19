@@ -1,0 +1,13 @@
+{
+  "n_cells": 6560,
+  "empty_rate": 0.7637195121951219,
+  "locked_extractable_rate": 0.23628048780487804,
+  "relaxed_extractable_rate": 0.23628048780487804,
+  "additional_cells_via_relaxed": 0,
+  "median_latency_s_empty": 96.07209792249887,
+  "median_latency_s_nonempty": 74.8026988125057,
+  "max_char_len_nonempty": 642,
+  "mean_pass_among_locked_extractable": 0.8806451612903226,
+  "confirmatory_freeze_statistical_dataset_sha256": "95209fff2f742d59b52aa5cf5616f1395ef7fc01fd87fe025c485577bca0d1c9",
+  "note": "Derived from confirmatory freeze parquet; raw completions not republished."
+}

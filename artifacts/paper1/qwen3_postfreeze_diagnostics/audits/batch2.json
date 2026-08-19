@@ -1,0 +1,74 @@
+[
+  {
+    "done_reason": "length",
+    "eval_count": 1024,
+    "response_empty": true,
+    "thinking_len": 3376,
+    "latency_ms": 94854.48221897241,
+    "response_len": 0,
+    "arm": "1024"
+  },
+  {
+    "done_reason": "stop",
+    "eval_count": 77,
+    "response_empty": false,
+    "thinking_len": 0,
+    "latency_ms": 7334.643355978187,
+    "response_len": 208,
+    "arm": "think_false"
+  },
+  {
+    "done_reason": "length",
+    "eval_count": 1024,
+    "response_empty": true,
+    "thinking_len": 4277,
+    "latency_ms": 94592.28009800427,
+    "response_len": 0,
+    "arm": "1024"
+  },
+  {
+    "done_reason": "stop",
+    "eval_count": 55,
+    "response_empty": false,
+    "thinking_len": 0,
+    "latency_ms": 5254.35694801854,
+    "response_len": 141,
+    "arm": "think_false"
+  },
+  {
+    "done_reason": "length",
+    "eval_count": 1024,
+    "response_empty": true,
+    "thinking_len": 2922,
+    "latency_ms": 94998.02588002058,
+    "response_len": 0,
+    "arm": "1024"
+  },
+  {
+    "done_reason": "stop",
+    "eval_count": 89,
+    "response_empty": false,
+    "thinking_len": 0,
+    "latency_ms": 8503.30047798343,
+    "response_len": 282,
+    "arm": "think_false"
+  },
+  {
+    "done_reason": "stop",
+    "eval_count": 739,
+    "response_empty": false,
+    "thinking_len": 2418,
+    "latency_ms": 68166.2728409865,
+    "response_len": 353,
+    "arm": "1024"
+  },
+  {
+    "done_reason": "stop",
+    "eval_count": 107,
+    "response_empty": false,
+    "thinking_len": 0,
+    "latency_ms": 9942.0987960184,
+    "response_len": 346,
+    "arm": "think_false"
+  }
+]

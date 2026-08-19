@@ -1,0 +1,30 @@
+{
+  "package": "qwen3_postfreeze_diagnostics",
+  "role": "POST-FREEZE DIAGNOSTIC EVIDENCE",
+  "created": "2026-08-20",
+  "confirmatory_software_doi": "10.5281/zenodo.21780089",
+  "confirmatory_freeze_parquet_sha256": "95209fff2f742d59b52aa5cf5616f1395ef7fc01fd87fe025c485577bca0d1c9",
+  "supports_claims": [
+    "Arm A empty=0%, pass@1\u22480.8605, done_reason=stop",
+    "Arm B sequential 145/800, Wilson [0.156,0.209]",
+    "Appendix A empty rate, relaxed=0 additional, latency medians, max length 642"
+  ],
+  "files": [
+    "README.md",
+    "arm_a/arm_a_cell_table.csv",
+    "arm_a/arm_a_cell_table.parquet",
+    "arm_a/arm_a_summary.json",
+    "arm_b/arm_b_cell_table.csv",
+    "arm_b/arm_b_cell_table.parquet",
+    "arm_b/arm_b_summary.json",
+    "audits/batch2.json",
+    "audits/smoking_gun_summary.json",
+    "audits/summaries.json",
+    "freeze_forensics/qwen3_freeze_cell_extract.csv",
+    "freeze_forensics/qwen3_freeze_cell_extract.parquet",
+    "freeze_forensics/qwen3_freeze_forensic_summary.json",
+    "protocols/arm_a.yaml",
+    "protocols/arm_b.yaml",
+    "scripts/export_postfreeze_diagnostics.py"
+  ]
+}
