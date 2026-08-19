@@ -174,6 +174,7 @@ def retry_missing_cells(
             providers=providers,
             tasks=tasks,
             prompts=prompts,
+            output_dir=experiment_dir,
         )
         record.metadata = {
             **record.metadata,
@@ -182,7 +183,7 @@ def retry_missing_cells(
         }
         writer.append(record)
 
-        if record.status == "completed":
+        if record.status in {"completed", "budget_exhausted"}:
             checkpoint_store.write(record)
             completed_ids.add(cell_id)
             recovered += 1

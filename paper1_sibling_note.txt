@@ -1,0 +1,2 @@
+Manuscript and forensic docs live at ../paper1 relative to this repo.
+This file marks that CALIPER code changes for v1.1 were made in-repo.

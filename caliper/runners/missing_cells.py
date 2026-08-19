@@ -109,7 +109,9 @@ def load_observed_cell_ids(experiment_dir: Path) -> dict[str, set[str]]:
     result_all = {record.cell_id for record in records}
     latest = latest_records_by_cell(records)
     result_completed = {
-        cell_id for cell_id, record in latest.items() if record.status == "completed"
+        cell_id
+        for cell_id, record in latest.items()
+        if record.status in {"completed", "budget_exhausted"}
     }
     result_failed = {
         cell_id for cell_id, record in latest.items() if record.status == "failed"

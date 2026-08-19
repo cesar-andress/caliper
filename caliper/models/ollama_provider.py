@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import time
 from typing import Any
 
@@ -18,6 +19,20 @@ from caliper.models.ollama_client import (
 from caliper.models.registry import register_provider
 from caliper.models.retry import ProviderRuntimeConfig
 from caliper.models.types import ModelRequest, ModelResponse
+
+
+def _thinking_digest(thinking: str) -> tuple[int, str]:
+    encoded = thinking.encode("utf-8", errors="replace")
+    return len(thinking), hashlib.sha256(encoded).hexdigest()
+
+
+def _is_budget_exhausted(*, text: str, done_reason: str | None, thinking: str) -> bool:
+    if text.strip():
+        return False
+    if done_reason == "length":
+        return True
+    # Visible empty with non-empty thinking is the forensic failure mode.
+    return bool(thinking.strip())
 
 
 @register_provider("ollama")
@@ -93,6 +108,7 @@ class OllamaProvider(BaseModelProvider):
                 seed=request.seed,
                 stop=request.stop,
                 timeout_seconds=self.runtime.timeout_seconds,
+                think=request.think,
             )
         except OllamaConnectionError as exc:
             msg = (
@@ -124,12 +140,21 @@ class OllamaProvider(BaseModelProvider):
                 retryable=False,
             ) from exc
 
-        text = str(payload.get("response", ""))
+        text = str(payload.get("response", "") or "")
+        thinking = str(payload.get("thinking", "") or "")
+        done_reason = payload.get("done_reason")
+        if done_reason is not None:
+            done_reason = str(done_reason)
         prompt_tokens = payload.get("prompt_eval_count")
         completion_tokens = payload.get("eval_count")
         total_tokens = None
         if isinstance(prompt_tokens, int) and isinstance(completion_tokens, int):
             total_tokens = prompt_tokens + completion_tokens
+
+        thinking_length, thinking_sha = _thinking_digest(thinking) if thinking else (0, None)
+        budget_exhausted = _is_budget_exhausted(
+            text=text, done_reason=done_reason, thinking=thinking
+        )
 
         latency_ms = (time.perf_counter() - started) * 1000
         return ModelResponse(
@@ -145,9 +170,16 @@ class OllamaProvider(BaseModelProvider):
             prompt_tokens=prompt_tokens if isinstance(prompt_tokens, int) else None,
             completion_tokens=completion_tokens if isinstance(completion_tokens, int) else None,
             total_tokens=total_tokens,
+            done_reason=done_reason,
+            thinking=thinking if thinking else None,
+            thinking_length=thinking_length,
+            thinking_sha256=thinking_sha,
+            budget_exhausted=budget_exhausted,
             raw_metadata={
                 "provider_type": self.provider_type,
                 "base_url": self.base_url,
+                "think_request": request.think,
+                "num_predict": request.max_tokens,
                 "ollama": payload,
             },
         )

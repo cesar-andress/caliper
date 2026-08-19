@@ -27,12 +27,14 @@ def ensure_output_layout(output_dir: Path) -> dict[str, Path]:
     logs_dir = output_dir / "logs"
     figures_dir = output_dir / "figures"
     checkpoints_dir = output_dir / "checkpoints"
-    for path in (logs_dir, figures_dir, checkpoints_dir):
+    raw_responses_dir = output_dir / "raw_responses"
+    for path in (logs_dir, figures_dir, checkpoints_dir, raw_responses_dir):
         path.mkdir(parents=True, exist_ok=True)
     return {
         "logs": logs_dir,
         "figures": figures_dir,
         "checkpoints": checkpoints_dir,
+        "raw_responses": raw_responses_dir,
     }
 
 
@@ -57,7 +59,11 @@ def build_statistical_dataset(
     primary_metric: str | None = None,
 ) -> Path | None:
     """Normalize results into the Paper 1 statistical schema."""
-    completed = results_df[results_df["status"] == "completed"].copy() if not results_df.empty else results_df
+    completed = (
+        results_df[results_df["status"].isin(["completed", "budget_exhausted"])].copy()
+        if not results_df.empty
+        else results_df
+    )
     if completed.empty:
         return None
 

@@ -55,11 +55,11 @@ def evaluate_results_dataframe(
     records: list[CellEvaluationRecord] = []
 
     for row in df.to_dict(orient="records"):
-        if row.get("status") != "completed":
+        if row.get("status") not in {"completed", "budget_exhausted"}:
             logger.info(
                 "evaluate.skip_row",
                 cell_id=row.get("cell_id"),
-                reason="status_not_completed",
+                reason="status_not_terminal",
             )
             continue
 

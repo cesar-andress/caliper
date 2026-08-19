@@ -117,7 +117,9 @@ def completed_rows_only(df: pd.DataFrame) -> pd.DataFrame:
         return df.copy()
     out = df
     if "status" in out.columns:
-        out = out[out["status"] == "completed"].copy()
+        # Include budget_exhausted: visible response empty after shared
+        # thinking+response budget; still a terminal scored outcome (pass@1=0).
+        out = out[out["status"].isin(["completed", "budget_exhausted"])].copy()
     if "cell_id" in out.columns and out["cell_id"].duplicated().any():
         out = out.drop_duplicates(subset=["cell_id"], keep="last").copy()
     return out.reset_index(drop=True)

@@ -725,15 +725,27 @@ def _validate_inference_and_metrics(output_dir: Path) -> list[StageResult]:
         return results
 
     empty_preds = completed["prediction"].astype(str).str.strip().eq("")
-    if empty_preds.any():
+    budget_mask = completed["status"].astype(str).eq("budget_exhausted") if "status" in completed.columns else False
+    n_budget = int(budget_mask.sum()) if hasattr(budget_mask, "sum") else 0
+    n_empty = int(empty_preds.sum())
+    if n_budget or n_empty:
         results.append(
             _stage(
                 ValidationStage.INFERENCE,
                 "FAIL",
                 latency_ms=(time.perf_counter() - start) * 1000,
-                message=f"{int(empty_preds.sum())} empty predictions",
-                root_cause="Empty prediction from model",
-                recommended_fix="Increase max_tokens or inspect prompt rendering",
+                message=(
+                    f"{n_empty} empty predictions "
+                    f"({n_budget} marked budget_exhausted)"
+                ),
+                root_cause=(
+                    "Empty visible response; for reasoning models this often means "
+                    "thinking consumed num_predict (done_reason=length)"
+                ),
+                recommended_fix=(
+                    "For Qwen3-class Ollama models: set think=false and/or raise "
+                    "max_tokens; inspect done_reason/eval_count/thinking_length"
+                ),
                 severity="critical",
             )
         )

@@ -9,7 +9,8 @@ It treats benchmark scores as measurements that depend on models, tasks, prompts
 decoding settings, and stochastic runs, and it records those facets explicitly so
 that variance, uncertainty, and ranking stability can be audited.
 
-**Release:** v1.0.0 — Zenodo [DOI 10.5281/zenodo.21780089](https://doi.org/10.5281/zenodo.21780089)  
+**Release:** v1.0.0 archived on Zenodo ([DOI 10.5281/zenodo.21780089](https://doi.org/10.5281/zenodo.21780089))  
+**Development (`main`):** v1.1.0 adds provider provenance and reasoning-budget controls for post-freeze diagnostics; it does not alter the v1.0 frozen dataset.  
 **Repository:** [github.com/cesar-andress/caliper](https://github.com/cesar-andress/caliper)
 
 **Authors:** César Andrés (corresponding; [ORCID 0009-0001-8968-3404](https://orcid.org/0009-0001-8968-3404)), David Martín-Moncunill ([ORCID 0000-0003-2422-9005](https://orcid.org/0000-0003-2422-9005)), José Manuel Baños ([ORCID 0009-0004-9971-7390](https://orcid.org/0009-0004-9971-7390)).  

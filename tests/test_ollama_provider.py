@@ -96,6 +96,34 @@ class TestOllamaGenerate:
         assert kwargs["max_tokens"] == 128
         assert kwargs["seed"] == 42
         assert kwargs["stop"] == ["\n\n"]
+        assert kwargs["think"] == "auto"
+
+    @patch("caliper.models.ollama_provider.ollama_generate")
+    def test_budget_exhausted_from_thinking(self, mock_generate) -> None:
+        mock_generate.return_value = {
+            "model": "qwen3:32b",
+            "response": "",
+            "thinking": "long chain of thought " * 50,
+            "done": True,
+            "done_reason": "length",
+            "prompt_eval_count": 100,
+            "eval_count": 1024,
+        }
+        provider = OllamaProvider(
+            model_name="qwen3:32b",
+            base_url="http://localhost:11434",
+            runtime=ProviderRuntimeConfig(timeout_seconds=30.0),
+        )
+        provider._availability_checked = True
+        provider._available = True
+        response = provider.generate(_make_request(think=False, max_tokens=1024))
+        assert response.text == ""
+        assert response.budget_exhausted is True
+        assert response.done_reason == "length"
+        assert response.thinking_length > 0
+        assert response.thinking_sha256
+        kwargs = mock_generate.call_args.kwargs
+        assert kwargs["think"] is False
 
     @patch("caliper.models.ollama_provider.ollama_list_models")
     @patch("caliper.models.ollama_client.generate")

@@ -45,7 +45,7 @@ class CheckpointStore:
         for path in self.checkpoint_dir.glob("*.json"):
             try:
                 data = json.loads(path.read_text(encoding="utf-8"))
-                if data.get("status") == "completed":
+                if data.get("status") in {"completed", "budget_exhausted"}:
                     completed.add(str(data["cell_id"]))
             except (json.JSONDecodeError, KeyError, TypeError):
                 continue

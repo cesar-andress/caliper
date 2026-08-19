@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "caliper"
-version = "1.0.0"
+version = "1.1.0"
 description = "Reproducible research artifact for variance, statistical power, and ranking fragility in LLM evaluations"
 readme = "README.md"
 license = "MIT"

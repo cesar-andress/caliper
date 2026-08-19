@@ -87,6 +87,22 @@ def list_models(*, base_url: str = DEFAULT_OLLAMA_BASE_URL, timeout_seconds: flo
     return [model for model in models if isinstance(model, dict)]
 
 
+def resolve_think_flag(think: Any) -> bool | None:
+    """Map CALIPER think mode to Ollama top-level ``think`` value.
+
+    Returns:
+        True/False to send top-level think; None to omit (provider default / auto).
+    """
+    if think is None or think == "auto":
+        return None
+    if think is True or think == "true":
+        return True
+    if think is False or think == "false":
+        return False
+    msg = f"Unsupported think mode: {think!r}"
+    raise ValueError(msg)
+
+
 def generate(
     *,
     base_url: str = DEFAULT_OLLAMA_BASE_URL,
@@ -98,11 +114,19 @@ def generate(
     seed: int | None,
     stop: list[str],
     timeout_seconds: float,
+    think: Any = "auto",
 ) -> dict[str, Any]:
-    """Call ``POST /api/generate`` and return the parsed JSON response."""
+    """Call ``POST /api/generate`` and return the parsed JSON response.
+
+    For Ollama reasoning models (e.g. Qwen3), ``num_predict`` (from
+    ``max_tokens``) covers **thinking tokens + final response tokens**.
+    Pass top-level ``think=false`` to disable the thinking channel so the
+    full budget is available for visible output.
+    """
     options: dict[str, Any] = {
         "temperature": temperature,
         "top_p": top_p,
+        # Shared budget: thinking + final answer for reasoning models.
         "num_predict": max_tokens,
     }
     if seed is not None:
@@ -110,12 +134,17 @@ def generate(
     if stop:
         options["stop"] = stop
 
-    body = {
+    body: dict[str, Any] = {
         "model": model,
         "prompt": prompt,
         "stream": False,
         "options": options,
     }
+    think_flag = resolve_think_flag(think)
+    if think_flag is not None:
+        # Must be top-level; inside options it is silently ignored by Ollama.
+        body["think"] = think_flag
+
     payload = _request_json(
         method="POST",
         url=_join_url(base_url, "/api/generate"),

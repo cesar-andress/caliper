@@ -274,8 +274,27 @@ class ExperimentRunner:
 
         progress = ExecutionProgress(total_cells=len(cells))
         total = len(cells)
+        stop_flag = self.output_dir / "STOP_REQUESTED"
 
         for index, cell in enumerate(cells, start=1):
+            if stop_flag.exists():
+                logger.warning(
+                    "experiment.stop_requested",
+                    path=str(stop_flag),
+                    completed=self.manifest.completed_cells,
+                    failed=self.manifest.failed_cells,
+                    index=index,
+                )
+                self.manifest.metadata["stopped_by_sequential_protocol"] = True
+                self.manifest.metadata["stop_flag_path"] = str(stop_flag)
+                try:
+                    self.manifest.metadata["stop_request"] = json.loads(
+                        stop_flag.read_text(encoding="utf-8")
+                    )
+                except Exception:
+                    self.manifest.metadata["stop_request"] = {"raw": True}
+                break
+
             cell_info = cell_to_dict(self.config, cell)
             cell_id = str(cell_info["cell_id"])
 
@@ -306,17 +325,20 @@ class ExperimentRunner:
                 providers=providers,
                 tasks=tasks,
                 prompts=prompts,
+                output_dir=self.output_dir,
             )
             writer.append(record)
-            if record.status == "completed":
+            if record.status in {"completed", "budget_exhausted"}:
                 checkpoint_store.write(record)
                 completed_ids.add(cell_id)
             else:
                 checkpoint_store.write_failed(record)
                 failure_writer.append(record)
 
-            progress.record_completion(success=record.status == "completed")
-            if record.status == "completed":
+            progress.record_completion(
+                success=record.status in {"completed", "budget_exhausted"}
+            )
+            if record.status in {"completed", "budget_exhausted"}:
                 self.manifest.completed_cells += 1
             else:
                 self.manifest.failed_cells += 1

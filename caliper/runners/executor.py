@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -18,7 +19,7 @@ from caliper.config.schema import (
 from caliper.models import create_provider
 from caliper.models.base import BaseModelProvider
 from caliper.models.retry import ProviderRuntimeConfig, RetryPolicy
-from caliper.models.types import ModelRequest
+from caliper.models.types import ModelRequest, ModelResponse
 from caliper.config.metrics import resolve_primary_metric
 from caliper.prompts.loader import load_prompt
 from caliper.runners.cells import expand_cells, make_cell_id
@@ -183,6 +184,44 @@ def extract_primary_score(scores: dict[str, float], metric: str) -> float:
     return 0.0
 
 
+def resolve_think_mode(model_cfg: ModelConfig, config: ExperimentConfig) -> Any:
+    """Resolve per-model think control (model.think > decoding.think > auto)."""
+    if model_cfg.think is not None:
+        return model_cfg.think
+    decoding = model_cfg.decoding or config.decoding
+    return getattr(decoding, "think", "auto")
+
+
+def _save_raw_response(
+    *,
+    output_dir: Path,
+    config: ExperimentConfig,
+    cell_id: str,
+    response: ModelResponse,
+) -> Path | None:
+    if not config.output.save_raw_responses:
+        return None
+    # Always write under the run output directory (same root as results.jsonl),
+    # not config.output.directory, which may be a parent path.
+    raw_dir = Path(output_dir) / "raw_responses"
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    path = raw_dir / f"{cell_id}.json"
+    payload = {
+        "cell_id": cell_id,
+        "text": response.text,
+        "done_reason": response.done_reason,
+        "prompt_tokens": response.prompt_tokens,
+        "completion_tokens": response.completion_tokens,
+        "thinking_length": response.thinking_length,
+        "thinking_sha256": response.thinking_sha256,
+        "budget_exhausted": response.budget_exhausted,
+        "raw_metadata": response.raw_metadata,
+        "thinking": response.thinking,
+    }
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+    return path
+
+
 def execute_cell(
     *,
     config: ExperimentConfig,
@@ -192,6 +231,7 @@ def execute_cell(
     providers: dict[str, BaseModelProvider],
     tasks: dict[str, BaseTask],
     prompts: dict[str, PromptVariantConfig],
+    output_dir: Path | None = None,
 ) -> ExperimentResultRecord:
     """Execute a single factorial cell and return a structured result."""
     cell_id = make_cell_id(config, cell)
@@ -204,11 +244,13 @@ def execute_cell(
 
     seed = config.random_seed + cell.run_index
     decoding = model_cfg.decoding or config.decoding
+    think_mode = resolve_think_mode(model_cfg, config)
 
     examples = task.load_examples()
     predictions: list[str] = []
     score_accumulator: dict[str, list[float]] = {}
     total_latency = 0.0
+    last_response: ModelResponse | None = None
 
     for example in examples:
         prompt_text = render_task_prompt(prompt_cfg, example, config_dir)
@@ -223,14 +265,37 @@ def execute_cell(
             top_k=decoding.top_k,
             max_tokens=decoding.max_tokens,
             stop=decoding.stop,
+            think=think_mode,
             metadata={
                 "expected_output": example.expected_output,
                 "language": example.language,
             },
         )
         response = provider.generate(request)
+        last_response = response
         predictions.append(response.text)
         total_latency += response.latency_ms
+
+        if response.budget_exhausted:
+            logger.warning(
+                "cell.budget_exhausted",
+                cell_id=cell_id,
+                model_id=cell.model_id,
+                done_reason=response.done_reason,
+                eval_count=response.completion_tokens,
+                thinking_length=response.thinking_length,
+                num_predict=decoding.max_tokens,
+                think=think_mode,
+            )
+        elif response.done_reason == "length":
+            logger.warning(
+                "cell.provider_truncation",
+                cell_id=cell_id,
+                model_id=cell.model_id,
+                done_reason=response.done_reason,
+                eval_count=response.completion_tokens,
+                prediction_len=len(response.text),
+            )
 
         example_scores = task.score(example, response.text)
         for name, value in example_scores.items():
@@ -242,6 +307,42 @@ def execute_cell(
     primary = extract_primary_score(averaged_scores, metric)
 
     provider_cfg = config.providers[model_cfg.provider]
+    raw_path = None
+    run_output_dir = Path(output_dir) if output_dir is not None else Path(config.output.directory)
+    if last_response is not None:
+        raw_path = _save_raw_response(
+            output_dir=run_output_dir,
+            config=config,
+            cell_id=cell_id,
+            response=last_response,
+        )
+
+    budget_exhausted = bool(last_response and last_response.budget_exhausted)
+    status = "budget_exhausted" if budget_exhausted else "completed"
+    error = None
+    if budget_exhausted:
+        error = (
+            "Budget Exhausted: empty visible response after shared "
+            f"thinking+response num_predict={decoding.max_tokens} "
+            f"(done_reason={last_response.done_reason if last_response else None})"
+        )
+        # Visible emptiness cannot pass executable metrics.
+        primary = 0.0
+        if metric in averaged_scores:
+            averaged_scores[metric] = 0.0
+
+    metadata: dict[str, Any] = {
+        "model_id_config": model_cfg.model_id,
+        "dataset": task_cfg.dataset,
+        "task_domain": resolve_task_domain(task_cfg),
+        "num_predictions": len(predictions),
+        "think": think_mode,
+        "num_predict": decoding.max_tokens,
+        "budget_exhausted": budget_exhausted,
+    }
+    if raw_path is not None:
+        metadata["raw_response_path"] = str(raw_path)
+
     return ExperimentResultRecord(
         cell_id=cell_id,
         experiment_id=config.experiment_id,
@@ -260,13 +361,19 @@ def execute_cell(
         prediction=predictions[0] if predictions else "",
         num_examples=len(examples),
         latency_ms=total_latency,
-        status="completed",
-        metadata={
-            "model_id_config": model_cfg.model_id,
-            "dataset": task_cfg.dataset,
-            "task_domain": resolve_task_domain(task_cfg),
-            "num_predictions": len(predictions),
-        },
+        status=status,
+        error=error,
+        done_reason=last_response.done_reason if last_response else None,
+        eval_count=last_response.completion_tokens if last_response else None,
+        prompt_eval_count=last_response.prompt_tokens if last_response else None,
+        thinking_length=last_response.thinking_length if last_response else 0,
+        thinking_sha256=last_response.thinking_sha256 if last_response else None,
+        thinking=(
+            last_response.thinking
+            if (last_response and config.output.save_thinking_text)
+            else None
+        ),
+        metadata=metadata,
     )
 
 
@@ -279,6 +386,7 @@ def execute_cell_safe(
     providers: dict[str, BaseModelProvider],
     tasks: dict[str, BaseTask],
     prompts: dict[str, PromptVariantConfig],
+    output_dir: Path | None = None,
 ) -> ExperimentResultRecord:
     """Execute a cell, returning a failed record instead of raising."""
     cell_id = make_cell_id(config, cell)
@@ -291,6 +399,7 @@ def execute_cell_safe(
             providers=providers,
             tasks=tasks,
             prompts=prompts,
+            output_dir=output_dir,
         )
     except Exception as exc:
         logger.exception("cell.failed", cell_id=cell_id, error=str(exc))

@@ -62,7 +62,11 @@ def count_terminal_failures(jsonl_path: Path) -> int:
 def count_terminal_completions(jsonl_path: Path) -> int:
     """Count cells whose latest result record completed successfully."""
     latest = latest_records_by_cell(load_results_records(jsonl_path))
-    return sum(1 for record in latest.values() if record.status == "completed")
+    return sum(
+        1
+        for record in latest.values()
+        if record.status in {"completed", "budget_exhausted"}
+    )
 
 
 def duplicate_cell_ids(records: list[ExperimentResultRecord]) -> list[str]:

@@ -21,6 +21,7 @@ htmlcov/
 .idea/
 .mypy_cache/
 outputs/
+logs/
 *.parquet.tmp
 __pycache__/
 *.py[cod]

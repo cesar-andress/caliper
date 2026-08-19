@@ -38,13 +38,21 @@ EXPERIMENT_ID_PATTERN = re.compile(r"^[a-z][a-z0-9_-]*$")
 
 
 class DecodingConfig(BaseModel):
-    """Sampling and decoding parameters applied across an experiment."""
+    """Sampling and decoding parameters applied across an experiment.
+
+    For Ollama reasoning models (Qwen3-class), ``max_tokens`` maps to
+    ``num_predict`` and covers **thinking tokens + final response tokens**.
+    Use per-model ``think: false`` when only the visible response should
+    consume the budget.
+    """
 
     top_p: float = Field(default=1.0, ge=0.0, le=1.0)
     top_k: int | None = Field(default=None, ge=1)
     max_tokens: int = Field(default=1024, ge=1)
     stop: list[str] = Field(default_factory=list)
     seed: int | None = None
+    # auto | true | false — see ModelConfig.think for semantics.
+    think: Literal["auto", "true", "false"] | bool = "auto"
 
 
 class ProviderConfig(BaseModel):
@@ -64,6 +72,9 @@ class ModelConfig(BaseModel):
     provider: str
     model_id: str
     decoding: DecodingConfig | None = None
+    # Reasoning control (Ollama). Overrides decoding.think when set.
+    # auto: omit provider think flag; true/false: send top-level think.
+    think: Literal["auto", "true", "false"] | bool | None = None
     extra: dict[str, Any] = Field(default_factory=dict)
 
     @field_validator("id")
@@ -113,7 +124,10 @@ class OutputConfig(BaseModel):
 
     directory: Path = Field(default=Path("./outputs"))
     format: OutputFormat = "parquet"
+    # When true, each cell writes raw provider payload under raw_responses/.
     save_raw_responses: bool = True
+    # Persist full thinking text in results.jsonl (can be large).
+    save_thinking_text: bool = False
 
     @field_validator("directory", mode="before")
     @classmethod

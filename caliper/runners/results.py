@@ -12,7 +12,12 @@ from pydantic import BaseModel, Field
 
 from caliper.storage.formats import write_manifest, write_results
 
-CellStatus = Literal["completed", "failed", "skipped"]
+# budget_exhausted: provider returned empty visible text after spending the
+# shared thinking+response token budget (typically done_reason=length).
+CellStatus = Literal["completed", "failed", "skipped", "budget_exhausted"]
+
+# Statuses that count as finished for resume / checkpoint skip.
+FINISHED_STATUSES = frozenset({"completed", "skipped", "budget_exhausted"})
 
 
 class ExperimentResultRecord(BaseModel):
@@ -37,6 +42,13 @@ class ExperimentResultRecord(BaseModel):
     latency_ms: float = 0.0
     status: CellStatus
     error: str | None = None
+    done_reason: str | None = None
+    eval_count: int | None = None
+    prompt_eval_count: int | None = None
+    thinking_length: int = 0
+    thinking_sha256: str | None = None
+    # Full thinking text may be large; prefer length+hash + raw payload on disk.
+    thinking: str | None = None
     executed_at: str = Field(
         default_factory=lambda: datetime.now(tz=UTC).isoformat(),
     )
@@ -56,11 +68,11 @@ class ResultWriter:
         self._records: list[ExperimentResultRecord] = []
 
     def load_existing(self) -> set[str]:
-        """Load completed cell IDs from an existing results file."""
+        """Load finished cell IDs from an existing results file."""
         if not self.jsonl_path.exists():
             return set()
 
-        completed: set[str] = set()
+        finished: set[str] = set()
         with self.jsonl_path.open(encoding="utf-8") as handle:
             for line in handle:
                 line = line.strip()
@@ -69,10 +81,10 @@ class ResultWriter:
                 data = json.loads(line)
                 record = ExperimentResultRecord.model_validate(data)
                 self._records.append(record)
-                if record.status == "completed":
-                    completed.add(record.cell_id)
-        self._completed_cell_ids = completed
-        return completed
+                if record.status in FINISHED_STATUSES:
+                    finished.add(record.cell_id)
+        self._completed_cell_ids = finished
+        return finished
 
     def load_all_records(self) -> list[ExperimentResultRecord]:
         """Return all records loaded from disk and memory."""
@@ -90,7 +102,7 @@ class ResultWriter:
             handle.write(record.model_dump_json())
             handle.write("\n")
         self._records.append(record)
-        if record.status == "completed":
+        if record.status in FINISHED_STATUSES:
             self._completed_cell_ids.add(record.cell_id)
 
     def finalize(self) -> dict[str, Path]:
