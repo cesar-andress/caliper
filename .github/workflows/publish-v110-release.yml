@@ -1,0 +1,28 @@
+name: Publish v1.1.0 GitHub Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: v1.1.0
+      - name: Create GitHub Release if missing
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view v1.1.0 >/dev/null 2>&1; then
+            echo "Release v1.1.0 already exists"
+          else
+            gh release create v1.1.0 \
+              artifacts/paper1/qwen3_postfreeze_diagnostics.zip \
+              --title "CALIPER v1.1.0 — post-freeze diagnostics for Paper 1" \
+              --notes "Publishes POST-FREEZE DIAGNOSTIC EVIDENCE under artifacts/paper1/qwen3_postfreeze_diagnostics/. Confirmatory freeze SHA-256 unchanged. Does not rewrite v1.0.0."
+          fi
